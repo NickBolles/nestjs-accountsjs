@@ -1,8 +1,14 @@
 {
   "name": "@nb/accountsjs-nest",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Use Accounts JS in nest like a pro",
   "main": "dist/index.js",
+  "files": [
+    "dist/*",
+    "index.js",
+    "index.ts",
+    "index.d.ts"
+  ],
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.json",
@@ -48,5 +54,10 @@
     "@accounts/rest-express": "^0.15.0",
     "@accounts/server": "^0.15.0",
     "@accounts/types": "^0.15.0"
+  },
+  "directories": {
+    "example": "examples",
+    "lib": "lib",
+    "test": "test"
   }
 }
