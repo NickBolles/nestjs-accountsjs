@@ -1,5 +1,5 @@
 {
-  "name": "accountsjs-nest",
+  "name": "@nb/accountsjs-nest",
   "version": "1.0.0",
   "description": "Use Accounts JS in nest like a pro",
   "main": "dist/index.js",
