@@ -8,21 +8,8 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ACCOUNTS_JS_SERVER } from '../utils/accounts.constants';
-/**
- * Helper function to get the access token out of the request header
- * @param req
- */
-function getAccessToken(req): string | undefined {
-  if (!req || !req.headers) {
-    return undefined;
-  }
-  const token =
-    (req && req.headers && req.headers.Authorization) ||
-    req.headers.authorization ||
-    req.body.accessToken ||
-    undefined;
-  return token && token.replace('Bearer ', '');
-}
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { getAccessToken } from '../utils/getAccessToken';
 
 // tslint:disable:max-line-length
 /**
@@ -60,3 +47,11 @@ export class AccountsSessionInterceptor implements NestInterceptor {
     return next.handle();
   }
 }
+
+/**
+ * A custom provider to use for the module
+ */
+export const AccountsSessionInterceptorProvider = {
+  provide: APP_INTERCEPTOR,
+  useClass: AccountsSessionInterceptor,
+};
