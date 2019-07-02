@@ -83,6 +83,7 @@ export class AccountsJsModule implements NestModule {
       },
       this.accountsOptionsToProvider(accountsOptions),
       serverProvider,
+      graphQLModuleFactory,
     ];
   }
 
