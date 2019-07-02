@@ -28,7 +28,7 @@ import { AccountsModule } from '@accounts/graphql-api';
 const debug = debuglog('nestjs-accounts');
 
 @Module({
-  exports: [ACCOUNTS_JS_SERVER, ACCOUNTS_JS_OPTIONS],
+  exports: [ACCOUNTS_JS_SERVER, ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_GRAPHQL],
 })
 export class AccountsJsModule implements NestModule {
   /**
