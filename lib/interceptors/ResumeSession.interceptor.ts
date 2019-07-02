@@ -6,9 +6,9 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ACCOUNTS_JS_SERVER } from '../utils/accounts.constants';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { getAccessToken } from '../utils/getAccessToken';
 
 // tslint:disable:max-line-length

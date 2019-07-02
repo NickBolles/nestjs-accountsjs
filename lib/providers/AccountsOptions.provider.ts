@@ -1,10 +1,10 @@
 import {
   AccountsOptions,
-  NestAccountsOptionsProvider,
   NestAccountsOptions,
+  NestAccountsOptionsProvider,
 } from '../interfaces/AccountsNestModuleOptions';
+import { ACCOUNTS_JS_OPTIONS } from '../utils/accounts.constants';
 import { isProvider } from '../utils/typeguards';
-import { ACCOUNTS_JS_OPTIONS } from '..';
 
 /**
  * Takes the accounts options and coerces it to a custom Nest provider.
@@ -33,6 +33,5 @@ export function accountsOptionsToProvider(
       useValue: options as NestAccountsOptions,
     };
   }
-
   return accountsProvider;
 }

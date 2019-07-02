@@ -1,9 +1,9 @@
+import { AccountsModuleConfig } from '@accounts/graphql-api';
 import { AccountsExpressOptions } from '@accounts/rest-express/lib/types';
 import AccountsServer, { AccountsServerOptions } from '@accounts/server';
 import { AuthenticationService } from '@accounts/types';
 import { Provider } from '@nestjs/common';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
-import { AccountsModuleConfig } from '@accounts/graphql-api';
 import { NullableProp } from '../utils/typing-helpers';
 
 /**
