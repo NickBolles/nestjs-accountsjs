@@ -4,6 +4,7 @@ import { AuthenticationService } from '@accounts/types';
 import { Provider } from '@nestjs/common';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { AccountsModuleConfig } from '@accounts/graphql-api';
+import { NullableProp } from '../utils/typing-helpers';
 
 /**
  * We have 3 levels of options
