@@ -1,7 +1,7 @@
 import { isBoolean } from 'util';
 import {
-  NestAccountsOptions,
   NestAccountsExpressOptions,
+  NestAccountsOptions,
 } from '../interfaces/AccountsNestModuleOptions';
 
 export function getRESTOptions(
