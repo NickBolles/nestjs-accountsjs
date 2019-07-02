@@ -20,10 +20,12 @@ import { NestAccountsOptionsProvider } from './interfaces/AccountsNestModuleOpti
 import {
   ACCOUNTS_JS_OPTIONS,
   ACCOUNTS_JS_SERVER,
+  ACCOUNTS_JS_GRAPHQL,
 } from './utils/accounts.constants';
 import { getRESTOptions } from './utils/getRestOptions';
-import { isClass, isProvider } from './utils/typeguards';
-const debug = debuglog('accounts:nest');
+import { isProvider } from './utils/typeguards';
+import { AccountsModule } from '@accounts/graphql-api';
+const debug = debuglog('nestjs-accounts');
 
 @Module({
   exports: [ACCOUNTS_JS_SERVER, ACCOUNTS_JS_OPTIONS],
@@ -102,8 +104,8 @@ export class AccountsJsModule implements NestModule {
     if (isProvider(options)) {
       accountsProvider = options;
       // Default in the provider so that consumers don't have to
-      if (!isClass(accountsProvider) && !accountsProvider.provide) {
-        accountsProvider.provide = ACCOUNTS_JS_OPTIONS;
+      if (!(accountsProvider as any).provide) {
+        (accountsProvider as any).provide = ACCOUNTS_JS_OPTIONS;
       }
     } else {
       accountsProvider = {
@@ -135,8 +137,8 @@ export class AccountsJsModule implements NestModule {
       pathToUse = path || '/accounts';
     }
 
-    debug(`mounting @accounts/rest-express on path '${pathToUse}'`);
     if (this.options.REST) {
+      debug(`mounting @accounts/rest-express on path '${pathToUse}'`);
       consumer
         // forRoutes will scope this middleware to it's route and trim the prefix, we'll
         // mount the accountsExpress middleware without a path and use forRoutes to define the prefix
@@ -153,6 +155,18 @@ const accountsServerFactory = {
     return new AccountsServer(serverOptions, services);
   },
   inject: [ACCOUNTS_JS_OPTIONS],
+};
+
+const graphQLModuleFactory: Provider<typeof AccountsModule> = {
+  provide: ACCOUNTS_JS_GRAPHQL,
+  useFactory: (
+    options: NestAccountsOptions,
+    accountsServer: AccountsServer,
+  ) => {
+    const { GraphQL } = options;
+    return AccountsModule.forRoot({ accountsServer, ...GraphQL });
+  },
+  inject: [ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_SERVER],
 };
 
 // todo: auth guard

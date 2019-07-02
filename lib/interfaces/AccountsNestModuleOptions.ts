@@ -4,26 +4,33 @@ import { AuthenticationService } from '@accounts/types';
 import { Provider } from '@nestjs/common';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
+import { AccountsModule, AccountsModuleConfig } from '@accounts/graphql-api';
 
 /**
  * We have 3 levels of options
- * First, Nest module options. This should contain the module level options and extends the default nest module options
- * Second, we have the options for how the components in the module should be have
- * Third, we have the accounts server options, this includes constructor arguments and services
+ * First, Nest module options. This should contain the top module level options and extends the default nest module options
+ * Second, we have the options for how the components in the module should be have, this is the NestAccountsOptions
+ * Third, we have the accounts server options, Accounts server services, Rest and GraphQL Settings
  */
 
 /**
- * Accounts Express options specific to the nest module
+ * Options for the AccountsJs Nest Module.
+ *
+ * Supports sending any valid Nest properties that you would normally set on a module
  */
-export interface NestAccountsExpressOptions extends AccountsExpressOptions {
-  /**
-   * @default false
-   */
-  relative?: boolean;
-}
 
-export interface AccountsServices {
-  [key: string]: AuthenticationService;
+export interface AccountsModuleOptions extends Partial<ModuleMetadata> {
+  /**
+   * Pass in an AccountsServer instance for the module to use.
+   *
+   * This will ignore the accountsOptions, because it assumes that you've already configured
+   * the server how you want it to work.
+   */
+  useServer?: AccountsServer;
+  /**
+   * Either a POJO or a Nest custom provider that results in an AccountsOptions for the module to use
+   */
+  accountsOptions?: AccountsOptions;
 }
 
 /**
@@ -37,6 +44,7 @@ export interface NestAccountsOptions {
    * rest-express options
    */
   REST?: NestAccountsExpressOptions | boolean;
+  GraphQL?: NestAccountsGraphQLOptions;
 }
 
 /**
@@ -57,22 +65,26 @@ export type AccountsOptions =
   | NestAccountsOptions
   | NestAccountsOptionsProvider
   | NestAccountsOptionsPartialProvider;
-/**
- * Options for the AccountsJs Nest Module.
- *
- * Supports sending any valid Nest properties that you would normally set on a module
- */
 
-export interface AccountsModuleOptions extends Partial<ModuleMetadata> {
+/**
+ * Accounts Express options specific to the nest module
+ */
+export interface NestAccountsExpressOptions extends AccountsExpressOptions {
   /**
-   * Pass in an AccountsServer instance for the module to use.
-   *
-   * This will ignore the accountsOptions, because it assumes that you've already configured
-   * the server how you want it to work.
+   * @default false
    */
-  useServer?: AccountsServer;
-  /**
-   * Either a POJO or a Nest custom provider that results in an AccountsOptions for the module to use
-   */
-  accountsOptions?: AccountsOptions;
+  relative?: boolean;
+}
+
+/**
+ * Accounts graphql options
+ */
+export interface NestAccountsGraphQLOptions
+  extends NullableProp<AccountsModuleConfig, 'accountsServer'> {}
+
+/**
+ * Accounts services to pass into accounts-server as the second constructor parameter
+ */
+export interface AccountsServices {
+  [key: string]: AuthenticationService;
 }

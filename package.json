@@ -51,9 +51,12 @@
     ]
   },
   "dependencies": {
+    "@accounts/graphql-api": "^0.15.0",
     "@accounts/rest-express": "^0.15.0",
     "@accounts/server": "^0.15.0",
-    "@accounts/types": "^0.15.0"
+    "@accounts/types": "^0.15.0",
+    "@graphql-modules/core": "^0.7.6",
+    "@nestjs/graphql": "^6.2.4"
   },
   "directories": {
     "example": "examples",
