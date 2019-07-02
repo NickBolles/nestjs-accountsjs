@@ -163,7 +163,14 @@ const graphQLModuleFactory: Provider<typeof AccountsModule> = {
     options: NestAccountsOptions,
     accountsServer: AccountsServer,
   ) => {
-    const { GraphQL } = options;
+    let { GraphQL = false } = options;
+
+    if (!GraphQL) {
+      return null;
+    } else if (GraphQL === true) {
+      GraphQL = {};
+    }
+
     return AccountsModule.forRoot({ accountsServer, ...GraphQL });
   },
   inject: [ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_SERVER],

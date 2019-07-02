@@ -3,8 +3,7 @@ import AccountsServer, { AccountsServerOptions } from '@accounts/server';
 import { AuthenticationService } from '@accounts/types';
 import { Provider } from '@nestjs/common';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
-import { Request, Response } from 'express';
-import { AccountsModule, AccountsModuleConfig } from '@accounts/graphql-api';
+import { AccountsModuleConfig } from '@accounts/graphql-api';
 
 /**
  * We have 3 levels of options
@@ -44,7 +43,7 @@ export interface NestAccountsOptions {
    * rest-express options
    */
   REST?: NestAccountsExpressOptions | boolean;
-  GraphQL?: NestAccountsGraphQLOptions;
+  GraphQL?: NestAccountsGraphQLOptions | boolean;
 }
 
 /**
