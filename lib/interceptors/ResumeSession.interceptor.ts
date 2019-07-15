@@ -45,16 +45,17 @@ export class AccountsSessionInterceptor implements NestInterceptor {
       } catch (e) {}
     }
 
-    const ctx = GqlExecutionContext.create(context);
+    // todo: remove this. It's handled by the context
+    // const ctx = GqlExecutionContext.create(context);
 
-    const gqlContext = ctx.getContext();
-    if (gqlContext) {
-      gqlContext.authToken = req.accessToken;
-      gqlContext.user = req.user;
-      gqlContext.userId = req.user.id;
+    // const gqlContext = ctx.getContext();
+    // if (gqlContext) {
+    //   gqlContext.authToken = req.accessToken;
+    //   gqlContext.user = req.user;
+    //   gqlContext.userId = req.user.id;
 
-      gqlContext.req = req;
-    }
+    //   gqlContext.req = req;
+    // }
 
     return next.handle();
   }
