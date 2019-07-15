@@ -3,7 +3,7 @@ import { AccountsExpressOptions } from '@accounts/rest-express/lib/types';
 import AccountsServer, { AccountsServerOptions } from '@accounts/server';
 import { AuthenticationService } from '@accounts/types';
 import { Provider } from '@nestjs/common';
-import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { ModuleMetadata, FactoryProvider } from '@nestjs/common/interfaces';
 import { NullableProp } from '../utils/typing-helpers';
 
 /**
@@ -50,7 +50,9 @@ export interface NestAccountsOptions {
 /**
  * Nest custom provider for NestAccountsOptions
  */
-export type NestAccountsOptionsProvider = Provider<NestAccountsOptions>;
+export type NestAccountsOptionsProvider =
+  | Provider<NestAccountsOptions>
+  | FactoryProvider<Promise<NestAccountsOptions>>;
 /**
  * Nest custom provider without the provide key because it will be defaulted in to ACCOUNTS_JS_OPTIONS internally
  */
