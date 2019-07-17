@@ -4,9 +4,9 @@ import { isArray } from 'util';
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-type GQLParam = [any, any, AccountsModuleContext & RequestContext, any]; // [root,args,context,info]
+export type GQLParam = [any, any, Context, any]; // [root,args,context,info]
 
-interface RequestContext {
+export interface RequestContext {
   req?: AccountsSessionRequest;
 }
 
