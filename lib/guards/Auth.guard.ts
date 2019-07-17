@@ -7,6 +7,6 @@ import { GetFieldFromExecContext } from '../utils/GraphQLUtils';
 @Injectable()
 export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    return !!GetFieldFromExecContext(context);
+    return !!GetFieldFromExecContext(context, 'user');
   }
 }
