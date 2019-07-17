@@ -21,8 +21,7 @@ export class AuthGuard implements CanActivate {
         const gqlParams: GQLParam = [ctx.getRoot(), ctx.getArgs(), gqlCtx, ctx.getInfo()];
         // use the authenticated function from accounts-js. All that's really needed is context
         await authenticated(() => null)(...gqlParams);
-        this.runValidators(context, gqlParams, gqlCtx.user);
-        return true;
+        return this.runValidators(context, gqlParams, gqlCtx.user);
       } catch (e) {
         return false;
       }
