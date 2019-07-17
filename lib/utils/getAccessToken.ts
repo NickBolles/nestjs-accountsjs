@@ -7,9 +7,6 @@ export function getAccessToken(req): string | undefined {
     return undefined;
   }
   const token =
-    (req && req.headers && req.headers.Authorization) ||
-    req.headers.authorization ||
-    req.body.accessToken ||
-    undefined;
+    (req && req.headers && req.headers.Authorization) || req.headers.authorization || req.body.accessToken || undefined;
   return token && token.replace('Bearer ', '');
 }

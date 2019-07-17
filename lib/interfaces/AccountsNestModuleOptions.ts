@@ -50,23 +50,15 @@ export interface NestAccountsOptions {
 /**
  * Nest custom provider for NestAccountsOptions
  */
-export type NestAccountsOptionsProvider =
-  | Provider<NestAccountsOptions>
-  | FactoryProvider<Promise<NestAccountsOptions>>;
+export type NestAccountsOptionsProvider = Provider<NestAccountsOptions> | FactoryProvider<Promise<NestAccountsOptions>>;
 /**
  * Nest custom provider without the provide key because it will be defaulted in to ACCOUNTS_JS_OPTIONS internally
  */
-export type NestAccountsOptionsPartialProvider = Omit<
-  NestAccountsOptionsProvider,
-  'provide'
->;
+export type NestAccountsOptionsPartialProvider = Omit<NestAccountsOptionsProvider, 'provide'>;
 /**
  * AccountsOptions interface, any of these are valid inputs for the accountsOptions property of AccountsModuleOptions
  */
-export type AccountsOptions =
-  | NestAccountsOptions
-  | NestAccountsOptionsProvider
-  | NestAccountsOptionsPartialProvider;
+export type AccountsOptions = NestAccountsOptions | NestAccountsOptionsProvider | NestAccountsOptionsPartialProvider;
 
 /**
  * Accounts Express options specific to the nest module
@@ -81,8 +73,7 @@ export interface NestAccountsExpressOptions extends AccountsExpressOptions {
 /**
  * Accounts graphql options
  */
-export interface NestAccountsGraphQLOptions
-  extends NullableProp<AccountsModuleConfig, 'accountsServer'> {}
+export interface NestAccountsGraphQLOptions extends NullableProp<AccountsModuleConfig, 'accountsServer'> {}
 
 /**
  * Accounts services to pass into accounts-server as the second constructor parameter

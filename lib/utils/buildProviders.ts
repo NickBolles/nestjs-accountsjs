@@ -20,9 +20,7 @@ export function buildProviders(options: AccountsModuleOptions): Provider[] {
   const { useServer, accountsOptions, providers = [] } = options;
 
   if (useServer && accountsOptions) {
-    throw new Error(
-      'accountsOptions will be ignored when passing an existing server instance',
-    );
+    throw new Error('accountsOptions will be ignored when passing an existing server instance');
   }
 
   let serverProvider: Provider = AccountsServerProvider;

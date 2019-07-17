@@ -1,10 +1,4 @@
-import {
-  ConnectionInformations,
-  CreateUser,
-  DatabaseInterface,
-  Session,
-  User,
-} from '@accounts/types';
+import { ConnectionInformations, CreateUser, DatabaseInterface, Session, User } from '@accounts/types';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -46,30 +40,14 @@ export class MockDatabase implements DatabaseInterface {
   private userHasService(user: User, serviceName: string): boolean {
     return user && user.services[serviceName];
   }
-  private userHasServiceWithId(
-    user: User,
-    serviceName: string,
-    serviceId: string,
-  ): boolean {
-    return (
-      this.userHasService(user, serviceName) &&
-      user.services[serviceName] === serviceId
-    );
+  private userHasServiceWithId(user: User, serviceName: string, serviceId: string): boolean {
+    return this.userHasService(user, serviceName) && user.services[serviceName] === serviceId;
   }
-  async findUserByServiceId(
-    serviceName: string,
-    serviceId: string,
-  ): Promise<User> {
-    return this._users.find(v =>
-      this.userHasServiceWithId(v, serviceName, serviceId),
-    );
+  async findUserByServiceId(serviceName: string, serviceId: string): Promise<User> {
+    return this._users.find(v => this.userHasServiceWithId(v, serviceName, serviceId));
   }
 
-  async setService(
-    userId: string,
-    serviceName: string,
-    data: object,
-  ): Promise<void> {
+  async setService(userId: string, serviceName: string, data: object): Promise<void> {
     const user = await this.findUserById(userId);
     if (!user) {
       throw new BadRequestException('User not found');
@@ -96,12 +74,7 @@ export class MockDatabase implements DatabaseInterface {
     // todo: throw if no user
     (user as any).password = newPassword;
   }
-  async addResetPasswordToken(
-    userId: string,
-    email: string,
-    token: string,
-    reason: string,
-  ): Promise<void> {
+  async addResetPasswordToken(userId: string, email: string, token: string, reason: string): Promise<void> {
     const user = await this.findUserById(userId);
     // todo: throw if no user
     if (!(user as any).resetToken) {
@@ -114,40 +87,20 @@ export class MockDatabase implements DatabaseInterface {
       expiresAt: Date.now() + 1000 * 60 * 60, // millis * seconds * minutes = 1 hr I think
     });
   }
-  async setResetPassword(
-    userId: string,
-    email: string,
-    newPassword: string,
-    token: string,
-  ): Promise<void> {
+  async setResetPassword(userId: string, email: string, newPassword: string, token: string): Promise<void> {
     const user = await this.findUserById(userId);
     // todo: throw if no user
-    const resetTokenIdx = (user as any).resetToken.findIndex(
-      v => v.token === token && v.email === email,
-    );
+    const resetTokenIdx = (user as any).resetToken.findIndex(v => v.token === token && v.email === email);
     ((user as any).resetToken as any[]).splice(resetTokenIdx, 1);
     this.setPassword(userId, newPassword);
   }
   async findUserByEmailVerificationToken(token: string): Promise<User> {
-    return this._users.find(
-      v => v.emails && v.emails.find(e => (e as any).token === token),
-    );
+    return this._users.find(v => v.emails && v.emails.find(e => (e as any).token === token));
   }
-  private userHasEmail(
-    user: User,
-    email: string,
-    verified: boolean = true,
-  ): boolean {
-    return (
-      user.emails &&
-      !!user.emails.find(e => e.verified === verified && e.address === email)
-    );
+  private userHasEmail(user: User, email: string, verified: boolean = true): boolean {
+    return user.emails && !!user.emails.find(e => e.verified === verified && e.address === email);
   }
-  async addEmail(
-    userId: string,
-    newEmail: string,
-    verified: boolean,
-  ): Promise<void> {
+  async addEmail(userId: string, newEmail: string, verified: boolean): Promise<void> {
     const user = await this.findUserById(userId);
     // todo: throw if no user
     if (this.userHasEmail(user, newEmail)) {
@@ -179,20 +132,13 @@ export class MockDatabase implements DatabaseInterface {
     const emailObj = user.emails.find(v => v.address === email);
     emailObj.verified = true;
   }
-  async addEmailVerificationToken(
-    userId: string,
-    email: string,
-    token: string,
-  ): Promise<void> {
+  async addEmailVerificationToken(userId: string, email: string, token: string): Promise<void> {
     const user = await this.findUserById(userId);
     // todo: throw if no user
     const emailObj = user.emails.find(e => e.address === email);
     (emailObj as any).token = token;
   }
-  async setUserDeactivated(
-    userId: string,
-    deactivated: boolean,
-  ): Promise<void> {
+  async setUserDeactivated(userId: string, deactivated: boolean): Promise<void> {
     const user = await this.findUserById(userId);
     // todo: throw if no user
     user.deactivated = deactivated;
@@ -226,10 +172,7 @@ export class MockDatabase implements DatabaseInterface {
     return newIdx;
   }
 
-  async updateSession(
-    sessionId: string,
-    connection: ConnectionInformations,
-  ): Promise<void> {
+  async updateSession(sessionId: string, connection: ConnectionInformations): Promise<void> {
     const session = this.findSessionById(sessionId);
     // todo: throw if no session
     (session as any).connection = connection;

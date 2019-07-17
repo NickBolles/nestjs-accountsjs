@@ -29,10 +29,7 @@ class MockServer implements AccountsServer {
   private services;
   private db;
   private hooks;
-  constructor(
-    options: AccountsServerOptions,
-    services: Record<any, AuthenticationService>,
-  ) {
+  constructor(options: AccountsServerOptions, services: Record<any, AuthenticationService>) {
     this.options = options as AccountsServer['options'];
   }
 
@@ -45,17 +42,10 @@ class MockServer implements AccountsServer {
   on(eventName: string, callback: HookListener): () => void {
     throw new Error('Method not implemented.');
   }
-  loginWithService(
-    serviceName: string,
-    params: any,
-    infos: ConnectionInformations,
-  ): Promise<LoginResult> {
+  loginWithService(serviceName: string, params: any, infos: ConnectionInformations): Promise<LoginResult> {
     throw new Error('Method not implemented.');
   }
-  loginWithUser(
-    user: User,
-    infos: ConnectionInformations,
-  ): Promise<LoginResult> {
+  loginWithUser(user: User, infos: ConnectionInformations): Promise<LoginResult> {
     throw new Error('Method not implemented.');
   }
   impersonate(
@@ -66,12 +56,7 @@ class MockServer implements AccountsServer {
   ): Promise<ImpersonationResult> {
     throw new Error('Method not implemented.');
   }
-  refreshTokens(
-    accessToken: string,
-    refreshToken: string,
-    ip: string,
-    userAgent: string,
-  ): Promise<LoginResult> {
+  refreshTokens(accessToken: string, refreshToken: string, ip: string, userAgent: string): Promise<LoginResult> {
     throw new Error('Method not implemented.');
   }
   createTokens({ token, isImpersonated, userId }: ICreateTokensReq): Tokens {

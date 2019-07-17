@@ -1,10 +1,4 @@
-import {
-  ConnectionInformations,
-  CreateUser,
-  DatabaseInterface,
-  Session,
-  User,
-} from '@accounts/types';
+import { ConnectionInformations, CreateUser, DatabaseInterface, Session, User } from '@accounts/types';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -46,20 +40,10 @@ export class UserDatabase implements DatabaseInterface {
   setPassword(userId: string, newPassword: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
-  addResetPasswordToken(
-    userId: string,
-    email: string,
-    token: string,
-    reason: string,
-  ): Promise<void> {
+  addResetPasswordToken(userId: string, email: string, token: string, reason: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
-  setResetPassword(
-    userId: string,
-    email: string,
-    newPassword: string,
-    token: string,
-  ): Promise<void> {
+  setResetPassword(userId: string, email: string, newPassword: string, token: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
   findUserByEmailVerificationToken(token: string): Promise<User> {
@@ -74,11 +58,7 @@ export class UserDatabase implements DatabaseInterface {
   verifyEmail(userId: string, email: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
-  addEmailVerificationToken(
-    userId: string,
-    email: string,
-    token: string,
-  ): Promise<void> {
+  addEmailVerificationToken(userId: string, email: string, token: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
   setUserDeactivated(userId: string, deactivated: boolean): Promise<void> {
@@ -98,10 +78,7 @@ export class UserDatabase implements DatabaseInterface {
   ): Promise<string> {
     throw new Error('Method not implemented.');
   }
-  updateSession(
-    sessionId: string,
-    connection: ConnectionInformations,
-  ): Promise<void> {
+  updateSession(sessionId: string, connection: ConnectionInformations): Promise<void> {
     throw new Error('Method not implemented.');
   }
   invalidateSession(sessionId: string): Promise<void> {

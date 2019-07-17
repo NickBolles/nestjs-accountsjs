@@ -16,9 +16,7 @@ import { isProvider } from '../utils/typeguards';
  *
  * @param {AccountsOptions} options Either a POJO to use, or a Nest Custom provider
  */
-export function accountsOptionsToProvider(
-  options: AccountsOptions,
-): NestAccountsOptionsProvider {
+export function accountsOptionsToProvider(options: AccountsOptions): NestAccountsOptionsProvider {
   let accountsProvider: NestAccountsOptionsProvider;
 
   if (isProvider(options)) {

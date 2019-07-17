@@ -19,10 +19,7 @@ import { UserDatabase } from '../shared/database.service';
        */
       accountsOptions: {
         // provide: ACCOUNTS_JS_OPTIONS // This is defaulted in by the module
-        useFactory: (
-          userDatabase: UserDatabase,
-          configService: ConfigService,
-        ) => {
+        useFactory: (userDatabase: UserDatabase, configService: ConfigService) => {
           return {
             serverOptions: {
               db: userDatabase,

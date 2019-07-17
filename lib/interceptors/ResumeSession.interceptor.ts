@@ -1,11 +1,5 @@
 import AccountsServer from '@accounts/server';
-import {
-  CallHandler,
-  ExecutionContext,
-  Inject,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ACCOUNTS_JS_SERVER } from '../utils/accounts.constants';
@@ -24,14 +18,9 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class AccountsSessionInterceptor implements NestInterceptor {
-  constructor(
-    @Inject(ACCOUNTS_JS_SERVER) private readonly accountsServer: AccountsServer,
-  ) {}
+  constructor(@Inject(ACCOUNTS_JS_SERVER) private readonly accountsServer: AccountsServer) {}
 
-  async intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Promise<Observable<any>> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
     const accessToken = getAccessToken(req);
 
@@ -44,18 +33,6 @@ export class AccountsSessionInterceptor implements NestInterceptor {
         // tslint:disable-next-line:no-empty
       } catch (e) {}
     }
-
-    // todo: remove this. It's handled by the context
-    // const ctx = GqlExecutionContext.create(context);
-
-    // const gqlContext = ctx.getContext();
-    // if (gqlContext) {
-    //   gqlContext.authToken = req.accessToken;
-    //   gqlContext.user = req.user;
-    //   gqlContext.userId = req.user.id;
-
-    //   gqlContext.req = req;
-    // }
 
     return next.handle();
   }
