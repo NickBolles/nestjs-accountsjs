@@ -22,7 +22,7 @@ export function getFieldFromDecoratorParams<K extends keyof Context>(
   field: K,
   ...fields: any
 ): Context[K];
-export function getFieldFromDecoratorParams(param: AccountsSessionRequest | GQLParam, ...fields: any): any {
+export function getFieldFromDecoratorParams(param: AccountsSessionRequest | GQLParam, ...fields: any[]): any {
   if (isGQLParam(param)) {
     const ctx = getGQLContext(param);
     return (ctx && deepGet(ctx, fields)) || (ctx.req && deepGet(ctx.req, fields));

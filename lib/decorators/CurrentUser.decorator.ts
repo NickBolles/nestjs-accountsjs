@@ -1,5 +1,6 @@
 import { createParamDecorator } from '@nestjs/common';
 import { getFieldFromDecoratorParams } from '../utils/GraphQLUtils';
+import { isArray } from 'util';
 
 /**
  * Parameter decorator to get the current logged in user from the request or GraphQL Context.
@@ -33,6 +34,6 @@ import { getFieldFromDecoratorParams } from '../utils/GraphQLUtils';
  *   }
  *
  */
-export const CurrentUser = createParamDecorator((data: any[], param) =>
-  getFieldFromDecoratorParams(param, 'user', ...data),
+export const CurrentUser = createParamDecorator((data: any | any[], param) =>
+  getFieldFromDecoratorParams(param, 'user', ...(isArray(data) ? data : [data])),
 );
