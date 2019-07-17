@@ -1,6 +1,16 @@
 import { createParamDecorator } from '@nestjs/common';
-import { AccountsSessionRequest } from '../interfaces/AccountsRequest';
+import { getFieldFromDecoratorParams } from '../utils/GraphQLUtils';
 
-export const UserId = createParamDecorator(
-  (data, req: AccountsSessionRequest) => req.user && req.user.UserId,
-);
+/**
+ * Parameter decorator to get the user ID from the request or GraphQL Context
+ *
+ * @example
+ *   @Controller('cats')
+ *   controller CatsController{
+ *      @Get()
+ *      cats(@UserId() userId: string){
+ *        return `${userID}'s cats!`;
+ *      }
+ *   }
+ */
+export const UserId = createParamDecorator((_data: never, param) => getFieldFromDecoratorParams(param, 'userId'));
