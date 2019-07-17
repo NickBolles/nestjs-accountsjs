@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
       try {
         const gqlParams: GQLParam = [ctx.getRoot(), ctx.getArgs(), gqlCtx, ctx.getInfo()];
         // use the authenticated function from accounts-js. All that's really needed is context
-        await runAuthenticated(gqlParams);
+        await authenticated(() => null)(...gqlParams);
         this.runValidators(context, gqlParams, gqlCtx.user);
         return true;
       } catch (e) {
@@ -47,8 +47,8 @@ export class AuthGuard implements CanActivate {
   ): Promise<boolean> {
     // combine the validators from the class first, then the handler
     const validatorFns: AuthValidatorFn[] = [
-      ...this.reflector.get(AUTH_VALIDATOR_FUNCTIONS, context.getClass()),
-      ...this.reflector.get(AUTH_VALIDATOR_FUNCTIONS, context.getHandler()),
+      ...(this.reflector.get(AUTH_VALIDATOR_FUNCTIONS, context.getClass()) || []),
+      ...(this.reflector.get(AUTH_VALIDATOR_FUNCTIONS, context.getHandler()) || []),
     ];
 
     // Run each function and store the value (either a boolean or a promise<boolean>) in the results array
@@ -56,14 +56,4 @@ export class AuthGuard implements CanActivate {
 
     return results.every(v => !!v); // Make sure that each promise resulted in a truthy value
   }
-}
-
-function runAuthenticated(gqlParams: GQLParam) {
-  return new Promise((resolve, reject) => {
-    try {
-      authenticated(resolve)(...gqlParams);
-    } catch (e) {
-      reject(e);
-    }
-  });
 }
