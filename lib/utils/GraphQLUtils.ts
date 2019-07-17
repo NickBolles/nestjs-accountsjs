@@ -40,7 +40,7 @@ export function getGQLContext(param: AccountsSessionRequest | GQLParam): Context
 function deepGet(obj, fields: any[]) {
   if (!obj || !fields || !fields.length) return null;
 
-  const field = fields.unshift();
+  const field = fields.shift();
   return !fields.length ? obj[field] : deepGet(obj[field], fields);
 }
 
