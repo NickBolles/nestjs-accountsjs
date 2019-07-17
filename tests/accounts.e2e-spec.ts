@@ -1,10 +1,8 @@
 import { AccountsPassword, ErrorMessages } from '@accounts/password';
-import AccountsServer from '@accounts/server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Response } from 'express';
 import * as request from 'supertest';
-import { MockDatabase } from './fixtures/MockDatabase';
 import { AccountsJsModule } from '../lib';
+import { MockDatabase } from './fixtures/MockDatabase';
 class TestError extends Error {
   constructor(private err: Error, private res: request.Response) {
     super(err.message);
@@ -151,10 +149,7 @@ describe('AccountsModule e2e', () => {
       db._users = [
         {
           username: 'existing',
-          emails: [
-            { address: 'existing@foo.com', verified: true },
-            { address: 'unverified@foo.com', verified: false },
-          ],
+          emails: [{ address: 'existing@foo.com', verified: true }, { address: 'unverified@foo.com', verified: false }],
         },
       ];
     });
