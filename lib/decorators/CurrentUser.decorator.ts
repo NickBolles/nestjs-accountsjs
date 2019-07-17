@@ -34,6 +34,9 @@ import { isArray } from 'util';
  *   }
  *
  */
-export const CurrentUser = createParamDecorator((data: any | any[], param) =>
-  getFieldFromDecoratorParams(param, 'user', ...(isArray(data) ? data : [data])),
-);
+export const CurrentUser = createParamDecorator((data: any | any[], param) => {
+  if (!data) {
+    getFieldFromDecoratorParams(param, 'user');
+  }
+  return getFieldFromDecoratorParams(param, 'user', ...(isArray(data) ? data : [data]));
+});

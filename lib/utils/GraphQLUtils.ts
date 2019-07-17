@@ -41,6 +41,8 @@ function deepGet(obj, fields: any[]) {
   if (!obj || !fields || !fields.length) return null;
 
   const field = fields.shift();
+  if (!field) return obj; // avoid undefined or null fields, just result with this object
+
   return !fields.length ? obj[field] : deepGet(obj[field], fields);
 }
 
