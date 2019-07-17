@@ -1,8 +1,8 @@
 import { AccountsModuleContext } from '@accounts/graphql-api';
-import { AccountsSessionRequest } from '../interfaces/AccountsRequest';
-import { isArray } from 'util';
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { isArray } from 'util';
+import { AccountsSessionRequest } from '../interfaces/AccountsRequest';
 
 export type GQLParam = [any, any, Context, any]; // [root,args,context,info]
 

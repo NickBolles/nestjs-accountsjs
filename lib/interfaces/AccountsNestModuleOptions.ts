@@ -3,7 +3,7 @@ import { AccountsExpressOptions } from '@accounts/rest-express/lib/types';
 import AccountsServer, { AccountsServerOptions } from '@accounts/server';
 import { AuthenticationService } from '@accounts/types';
 import { Provider } from '@nestjs/common';
-import { ModuleMetadata, FactoryProvider } from '@nestjs/common/interfaces';
+import { FactoryProvider, ModuleMetadata } from '@nestjs/common/interfaces';
 import { NullableProp } from '../utils/typing-helpers';
 
 /**

@@ -4,7 +4,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ACCOUNTS_JS_SERVER } from '../utils/accounts.constants';
 import { getAccessToken } from '../utils/getAccessToken';
-import { GqlExecutionContext } from '@nestjs/graphql';
 
 // tslint:disable:max-line-length
 /**
