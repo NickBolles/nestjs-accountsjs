@@ -8,7 +8,7 @@ export type AuthValidatorFn = (
   user: User,
   params: AccountsSessionRequest | GQLParam,
   context: ExecutionContext,
-) => boolean | Promise<Boolean>;
+) => boolean | Promise<boolean>;
 
 /**
  * A decorator to set validator functions for the Auth Guard.

@@ -39,20 +39,30 @@ export class AuthGuard implements CanActivate {
    * @param param
    * @param user
    */
-  async runValidators(
+  private async runValidators(
     context: ExecutionContext,
     param: AccountsSessionRequest | GQLParam,
     user: User,
   ): Promise<boolean> {
     // combine the validators from the class first, then the handler
-    const validatorFns: AuthValidatorFn[] = [
-      ...(this.reflector.get(AUTH_VALIDATOR_FUNCTIONS, context.getClass()) || []),
-      ...(this.reflector.get(AUTH_VALIDATOR_FUNCTIONS, context.getHandler()) || []),
+    const validatorFns: Array<boolean | Promise<boolean>> = [
+      ...this.getAndRunValidators(context.getClass(), user, param, context),
+      ...this.getAndRunValidators(context.getHandler(), user, param, context),
     ];
 
-    // Run each function and store the value (either a boolean or a promise<boolean>) in the results array
-    const results = await Promise.all(validatorFns.map(fn => fn(user, param, context)));
+    return (await Promise.all(validatorFns)).every(v => !!v); // Make sure that each promise resulted in a truthy value
+  }
 
-    return results.every(v => !!v); // Make sure that each promise resulted in a truthy value
+  private getAndRunValidators(
+    scope: any,
+    user: User,
+    param: AccountsSessionRequest | GQLParam,
+    context: ExecutionContext,
+  ): Array<boolean | Promise<boolean>> {
+    return this.getValidators(scope).map(fn => fn(user, param, context));
+  }
+
+  private getValidators(scope: any): AuthValidatorFn[] {
+    return this.reflector.get(AUTH_VALIDATOR_FUNCTIONS, scope) || [];
   }
 }
