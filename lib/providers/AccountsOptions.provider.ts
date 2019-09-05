@@ -2,9 +2,11 @@ import {
   AccountsOptions,
   NestAccountsOptions,
   NestAccountsOptionsProvider,
+  AccountsOptionsFactory,
 } from '../interfaces/AccountsNestModuleOptions';
 import { ACCOUNTS_JS_OPTIONS } from '../utils/accounts.constants';
-import { isProvider } from '../utils/typeguards';
+import { isProvider, isClassProvider, isExistingProvider } from '../utils/typeguards';
+import { ClassProvider, ExistingProvider } from '@nestjs/common/interfaces';
 
 /**
  * Takes the accounts options and coerces it to a custom Nest provider.
@@ -19,17 +21,23 @@ import { isProvider } from '../utils/typeguards';
 export function accountsOptionsToProvider(options: AccountsOptions): NestAccountsOptionsProvider {
   let accountsProvider: NestAccountsOptionsProvider;
 
-  if (isProvider(options)) {
-    accountsProvider = options;
-    // Default in the provider so that consumers don't have to
-    if (!(accountsProvider as any).provide) {
-      (accountsProvider as any).provide = ACCOUNTS_JS_OPTIONS;
-    }
-  } else {
-    accountsProvider = {
+  if (!isProvider(options)) {
+    return {
       provide: ACCOUNTS_JS_OPTIONS,
       useValue: options as NestAccountsOptions,
     };
   }
-  return accountsProvider;
+
+  if (isClassProvider(options) || isExistingProvider(options)) {
+    return {
+      provide: ACCOUNTS_JS_OPTIONS,
+      inject: [(options as ClassProvider).useClass || (options as ExistingProvider).useExisting],
+      useFactory: async (optionsFactory: AccountsOptionsFactory) => await optionsFactory.createAccountsOptions(),
+    };
+  }
+
+  return {
+    ...options,
+    provide: ACCOUNTS_JS_OPTIONS,
+  };
 }

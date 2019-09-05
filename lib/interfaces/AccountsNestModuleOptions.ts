@@ -2,8 +2,13 @@ import { AccountsModuleConfig } from '@accounts/graphql-api';
 import { AccountsExpressOptions } from '@accounts/rest-express/lib/types';
 import AccountsServer, { AccountsServerOptions } from '@accounts/server';
 import { AuthenticationService } from '@accounts/types';
-import { Provider } from '@nestjs/common';
-import { FactoryProvider, ModuleMetadata } from '@nestjs/common/interfaces';
+import {
+  FactoryProvider,
+  ModuleMetadata,
+  ValueProvider,
+  ClassProvider,
+  ExistingProvider,
+} from '@nestjs/common/interfaces';
 import { NullableProp } from '../utils/typing-helpers';
 
 /**
@@ -34,33 +39,6 @@ export interface AccountsModuleOptions extends Partial<ModuleMetadata> {
 }
 
 /**
- * Accounts options for Nest.
- * Holds the config for different parts of the accountsjs module
- */
-export interface NestAccountsOptions {
-  serverOptions: AccountsServerOptions;
-  services?: AccountsServices;
-  /**
-   * rest-express options
-   */
-  REST?: NestAccountsExpressOptions | boolean;
-  GraphQL?: NestAccountsGraphQLOptions | boolean;
-}
-
-/**
- * Nest custom provider for NestAccountsOptions
- */
-export type NestAccountsOptionsProvider = Provider<NestAccountsOptions> | FactoryProvider<Promise<NestAccountsOptions>>;
-/**
- * Nest custom provider without the provide key because it will be defaulted in to ACCOUNTS_JS_OPTIONS internally
- */
-export type NestAccountsOptionsPartialProvider = Omit<NestAccountsOptionsProvider, 'provide'>;
-/**
- * AccountsOptions interface, any of these are valid inputs for the accountsOptions property of AccountsModuleOptions
- */
-export type AccountsOptions = NestAccountsOptions | NestAccountsOptionsProvider | NestAccountsOptionsPartialProvider;
-
-/**
  * Accounts Express options specific to the nest module
  */
 export interface NestAccountsExpressOptions extends AccountsExpressOptions {
@@ -74,6 +52,43 @@ export interface NestAccountsExpressOptions extends AccountsExpressOptions {
  * Accounts graphql options
  */
 export interface NestAccountsGraphQLOptions extends NullableProp<AccountsModuleConfig, 'accountsServer'> {}
+
+/**
+ * Accounts options for Nest.
+ * Holds the config for different parts of the accountsjs module
+ */
+export interface NestAccountsOptions {
+  serverOptions: AccountsServerOptions;
+  services?: AccountsServices;
+  /**
+   * rest-express options
+   */
+  REST?: NestAccountsExpressOptions | boolean;
+  GraphQL?: NestAccountsGraphQLOptions | boolean;
+}
+
+export type AsyncNestAccountsOptions = Promise<NestAccountsOptions> | NestAccountsOptions;
+
+export interface AccountsOptionsFactory {
+  createAccountsOptions(): AsyncNestAccountsOptions;
+}
+/**
+ * Nest custom provider for NestAccountsOptions
+ */
+export type NestAccountsOptionsProvider =
+  | ValueProvider<AsyncNestAccountsOptions>
+  | FactoryProvider<AsyncNestAccountsOptions>
+  | ClassProvider<AccountsOptionsFactory>
+  | ExistingProvider<AccountsOptionsFactory>;
+
+/**
+ * Nest custom provider without the provide key because it will be defaulted in to ACCOUNTS_JS_OPTIONS internally
+ */
+export type NestAccountsOptionsPartialProvider = Omit<NestAccountsOptionsProvider, 'provide'>;
+/**
+ * AccountsOptions interface, any of these are valid inputs for the accountsOptions property of AccountsModuleOptions
+ */
+export type AccountsOptions = NestAccountsOptions | NestAccountsOptionsProvider | NestAccountsOptionsPartialProvider;
 
 /**
  * Accounts services to pass into accounts-server as the second constructor parameter
