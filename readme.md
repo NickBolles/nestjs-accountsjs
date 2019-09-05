@@ -11,10 +11,10 @@
 
 app.module.ts
 ```typescript
-import { Module } from '@nestjs/common';
-import { Mongo } from  '@accounts/mongo';
-import { AccountsPassword } from '@accounts/password';
-import { AccountsJsModule } from '@nb/nestjs-accountsjs';
+import { Module } from "@nestjs/common";
+import { Mongo } from  "@accounts/mongo";
+import { AccountsPassword } from "@accounts/password";
+import { AccountsJsModule } from "@nb/nestjs-accountsjs";
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { AccountsJsModule } from '@nb/nestjs-accountsjs';
       accountsOptions: {
         serverOptions: { // Options passed to the AccountsServer instance
           db: new Mongo(),
-          tokenSecret: 'secret',
+          tokenSecret: "secret",
         },
         services: { // Services passed as the second parameter to the AccountsServer Instance
           password: new AccountsPassword(),
@@ -48,11 +48,11 @@ AccountsJsModule.register({useServer: accountsServerInstance})
 
 app.module.ts
 ```typescript
-import { Module } from '@nestjs/common';
-import { Mongo } from  '@accounts/mongo';
-import { AccountsPassword } from '@accounts/password';
-import { AccountsJsModule } from '@nb/nestjs-accountsjs';
-import { AppAccountsOptionsFactory } from './AppAccountsOptionsFactory'
+import { Module } from "@nestjs/common";
+import { Mongo } from  "@accounts/mongo";
+import { AccountsPassword } from "@accounts/password";
+import { AccountsJsModule } from "@nb/nestjs-accountsjs";
+import { AppAccountsOptionsFactory } from "./AppAccountsOptionsFactory"
 
 @Module({
   imports: [
@@ -72,7 +72,7 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
     return {
         serverOptions: {
           db: new Mongo(),
-          tokenSecret: this.configService.get('secret'),
+          tokenSecret: this.configService.get("secret"),
         },
         services: {
           password: new AccountsPassword(),
@@ -87,7 +87,7 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
 > Register can take any [custom provider](https://docs.nestjs.com/fundamentals/custom-providers) format. IMHO, the useClass pattern, and breaking the options factory class into it's own file is the most clean format.
 
 ## More Examples
-See the examples directory for more examples
+See the [./examples](./examples) directory for more examples
 
 ## Built in support for REST and GraphQL
 
@@ -136,9 +136,10 @@ The module will configure `@accounts/graphql-api` and export it as the ACCOUNTS_
 
 app.module.ts
 ```typescript
-import { Module, Inject } from '@nestjs/common';
-import { AccountsModule } from '@accounts/graphql-api';
-import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNestAccountsOptions } from '@nb/nestjs-accountsjs';
+import { Module, Inject } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql"
+import { AccountsModule } from "@accounts/graphql-api";
+import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNestAccountsOptions } from "@nb/nestjs-accountsjs";
 
 @Module({
     imports: [
@@ -146,7 +147,7 @@ import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNes
           accountsOptions: { 
               serverOptions: {
                 db: this.userDatabase,
-                tokenSecret: 'secret',
+                tokenSecret: "secret",
             },
             services: {
                 password: new AccountsPassword(),
@@ -170,10 +171,36 @@ import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNes
 export class AppModule {}
 ```
 
+#### Merging with Code First schemas
+Usually you're going to have other GraphQL types and resolvers, merging these with the AccountsGQLModule gets a little bit more tricky. Since Accounts uses GraphQLModules we can utilize their utilities to transform the auto generated schema that nestjs creates.
+
+```typescript
+GraphQLModule.forRootAsync({ 
+    inject: [ACCOUNTS_JS_GRAPHQL], // Inject the build GraphQL-Module
+    useFactory: (accountsGQLModule: typeof AccountsModule) => {
+        const { context } = this.accountsJSGraphQLModule;
+
+        return {
+            autoSchemaFile: "schema.gql",
+            context,
+            // ... any other @nestjs/graphql Options
+            transformSchema: async autoGenSchema => { // Intersect the schema and add in AccountsJS GQL Types, resolvers and directives
+                return new GraphQLModule({
+                    extraSchemas: [autoGenSchema],
+                    imports: [this.accountsJSGraphQLModule]
+                })
+            }
+        }
+    }
+})
+```
+
+#### Merging with schema first
+// todo
 
 # Providers
 
-The module will register several providers for accounts js. This enables these core items for dependency injection in Nest, which can be really powerful. For example you can inject the server into your user's service and add an event listener for user created, to populate the user with default data.
+The module will register several providers for accounts js. This enables these core items for dependency injection in Nest, which can be really powerful. For example you can inject the server into your users service and add an event listener for user created, to populate the user with default data.
 
 | Injector Token        | Value           | Type |
 | ------------- |:-------------:|:-----:|
