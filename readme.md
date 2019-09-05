@@ -1,11 +1,13 @@
 
 
-Full user management with Accounts.JS and Nest.js in minutes.
+> Full user management with Accounts.JS and Nest.js in minutes.
 
 
-## Basic Usage
+# Basic Usage
 
 `npm i @nb/nestjs-accountsjs`
+
+> note: currently I only have this on my personal NPM registry. If make an issue to remind me to make it public if you can't install it with `npm i @nb/nestjs-accountsjs --registry npm.nickbolles.com`
 
 app.module.ts
 ```typescript
@@ -34,13 +36,15 @@ export class AppModule {}
 
 ```
 
-Alternatively you can pass the accountsjs server that you want to use to regiser: 
+## With Accounts Server Instance
+
+Alternatively you can pass the accountsjs server that you want to use to register: 
 
 ```typescript
 AccountsJsModule.register({useServer: accountsServerInstance})
 ```
 
-### With a class
+## With Options Factory Class
 
 app.module.ts
 ```typescript
@@ -80,10 +84,94 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
 }
 ```
 
-### More Examples
+> Register can take any [custom provider](https://docs.nestjs.com/fundamentals/custom-providers) format. IMHO, the useClass pattern, and breaking the options factory class into it's own file is the most clean format.
+
+## More Examples
 See the examples directory for more examples
 
-## Providers
+## Built in support for REST and GraphQL
+
+### REST
+Passing `REST: true`, or a config object will enable and mount the `@accounts/rest-express` package. 
+
+#### Config
+
+`true` for defaults, or an object with the following keys
+
+| Key        | Default | Description |
+| ------------- |:-------------:|-----|
+| path | `/accounts` | The path to mount on |
+| relative | `true` | Is the path Relative to the nest route, passing an absolute path is the same as making this `false` |
+| ...[AccountsExpressOptions](https://accounts-js.netlify.com/docs/transports/rest-express) | | any other AccountsExpress options |
+
+#### REST Path
+By default it mounts at the MODULE_PATH, which is the same as what [`nest-router`](https://github.com/nestjsx/nest-router) configures. If it's not configured it defaults to `/accounts`.
+
+| Config        | Nest router module config| Path | Examples |
+| ------------- |:-------------:|:-----:|:---:|
+| `{REST: true}` | none | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
+| `{REST: true}` | `/auth` | `/auth` | `/auth/user`, `/auth/:service/authenticate` |
+| `{REST: {path: "myPath"}}` | `/auth` | `/auth/myPath` | `/auth/myPath/user`, `/auth/myPath/:service/authenticate` |
+| `{REST: {path: "/myPath"}}` | `/auth` | `/myPath` | `/myPath/user`, `/myPath/:service/authenticate` |
+
+> The path is passed into [`resolve`](https://nodejs.org/api/url.html#url_url_resolve_from_to) for example: `resolve("/auth", "myPath")` -> `/auth/myPath`, or `resolve("/auth","/myPath")` -> `/myPath`
+ 
+#### Relative urls
+By default the path is relative to the NEST path as in the second to last example above. You can override this by setting the `relative` option to `false`. Really this is equal to passing an absolute path as in the last example above
+
+| Config        | Nest router module config| Path | Examples |
+| ------------- |:-------------:|:-----:|:---:|
+| `{REST: {relative: false}}` | none | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
+| `{REST: {relative: false}}` | `/auth` | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
+| `{REST: {path: "myPath", relative: false}}` | `/auth` | `/myPath` | `/myPath/user`, `/myPath/:service/authenticate` |
+| `{REST: {path: "/myPath", relative: false}}` | `/auth` | `/myPath` | `/myPath/user`, `/myPath/:service/authenticate` |
+
+### GraphQL
+The module will configure `@accounts/graphql-api` and export it as the ACCOUNTS_JS_GRAPHQL provider. This make it easy to use it with `@nestjs/graphql`
+
+#### Config
+`true` to use defaults, or an object of [AccountsModuleConfig](https://accounts-js.netlify.com/docs/transports/graphql#customization)
+
+#### Mounting
+
+app.module.ts
+```typescript
+import { Module, Inject } from '@nestjs/common';
+import { AccountsModule } from '@accounts/graphql-api';
+import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNestAccountsOptions } from '@nb/nestjs-accountsjs';
+
+@Module({
+    imports: [
+        AccountsJsModule.register({
+          accountsOptions: { 
+              serverOptions: {
+                db: this.userDatabase,
+                tokenSecret: 'secret',
+            },
+            services: {
+                password: new AccountsPassword(),
+            },
+            GraphQL: true
+           },
+        }),
+        GraphQLModule.forRootAsync({ 
+            inject: [ACCOUNTS_JS_GRAPHQL], // Inject the build GraphQL-Module
+            useFactory: (accountsGQLModule: typeof AccountsModule) => {
+                return {
+                    modules: [accountsGQLModule] // Pass the module to @nestjs/graphql -> Apollo server
+                    // or: 
+                    // schema: accountsGQLModule.schemaAsync,
+                    // context: this.accountsJSGraphQLModule.context
+                };
+            }
+        })
+    ]
+})
+export class AppModule {}
+```
+
+
+# Providers
 
 The module will register several providers for accounts js. This enables these core items for dependency injection in Nest, which can be really powerful. For example you can inject the server into your user's service and add an event listener for user created, to populate the user with default data.
 
@@ -94,24 +182,24 @@ The module will register several providers for accounts js. This enables these c
 | ACCOUNTS_JS_GRAPHQL | Accounts JS GraphQLModule |  AccountsModule from `@accounts/graphql-api`|
 
 
-## Decorators
+# Decorators
 
-### Param Decorators
+## Param Decorators
 Decorators to match several of the request fields that accounts provides. These are compatible with both HTTP Request handlers and Graphql resolvers and helps to make code more concise and self-documenting
 
 | Name        | Usage           |  Shorthand for |
 | ------------- |:-------------:|:-----:|
 | User      | `@User() currentUser: User` | `req.user` |
 | UserId      | `@UserID() userId: string` | `req.user.id` |
-| AuthToken | `@AuthToken() authToken: string | undefined` | multiple, `req.headers.Authorization`|
+| AuthToken | `@AuthToken() authToken?: string` | multiple, `req.headers.Authorization`|
 | ClientIP | `@ClientIP() clientIP: string` | multiple |
 | UserAgent | `@UserAgent() userAgent: string` | multiple |
 
-### Auth Guard
+## Auth Guard
 
-#### Auth Guard
 2 more special decorators exist. The first is `@AuthGuard`. Auth guard, but default will check for the presence of a user on the Execution context. This can be used at either the class or the method handler level
 
+Class level:
 ```typescript
 class MyController {
     @Get()
@@ -122,6 +210,7 @@ class MyController {
 }
 ```
 
+Method level:
 ```typescript
 @AuthGuard()
 class MyController {
@@ -143,7 +232,7 @@ class MyResolver {
 }
 ```
 
-#### AuthValidator
+## AuthValidator
 The second is `@AuthValidator`, which can be used to customize the AuthGuard behavior. Validators are functions that return a boolean, or a promise that resolves to a boolean. If the result is truthy, the validator succeeds and if all validators succeed the method will be executed.
 
 Validators can be added at the class or the method level, and will stack. So in the example below the `@AuthGuard` will run the class validator, `IsDarthVader`, then it will run `TimeToReveal` and `AsyncValidator`. If any of them fail, the method will not be run.
@@ -173,7 +262,7 @@ class DarthVader {
 }
 ```
 
-#### Making Validators Robust
+### Making Validators Robust
 Note that TimeToReveal is HTTP specific because it uses the body to the request. We can make this a little more robust by using some of the util methods provided, such as `isGQLParam` `getGQLcontext`, `getFieldFromDecoratorParams` and `getFieldFormExecContext`.
 
 
@@ -206,9 +295,12 @@ class DarthVader {
 }
 ```
 
-### Other Decorators
+## Other Decorators
 `@EnableForService` - Guard to only enable if a service exists currently not fully implemented
 
-## Interceptor
+# Interceptor
 
-This module will mount The `AccountsSessionInterceptor` to initialize the session. This is registered as an `APP_INTERCEPTOR`, so it will be in effect for the entire app.
+This module will mount The `AccountsSessionInterceptor` to initialize the session. This is registered as an `APP_INTERCEPTOR`, so it will be in effect for the entire app. This is also required for any of the decorators to function correctly.
+
+
+## 
