@@ -39,7 +39,6 @@ class AppAccountsJSOptionsFactory implements AccountsOptionsFactory {
         headerName: 'MyCustomHeader', // default "Authorization"
         rootQueryName: 'RootQuery', // default "Query"
         rootMutationName: 'RootMutation', // default "Mutation"
-        extend: false, // default true
         withSchemaDefinition: true, // default: false
         userAsInterface: true, // default: false
         /**

@@ -2,22 +2,11 @@ import accountsExpress from '@accounts/rest-express';
 import AccountsServer from '@accounts/server';
 import { Inject, Module } from '@nestjs/common';
 import { MODULE_PATH } from '@nestjs/common/constants';
-import {
-  DynamicModule,
-  MiddlewareConsumer,
-  NestModule,
-} from '@nestjs/common/interfaces';
+import { DynamicModule, MiddlewareConsumer, NestModule } from '@nestjs/common/interfaces';
 import { resolve } from 'url';
 import { debuglog } from 'util';
-import {
-  AccountsModuleOptions,
-  NestAccountsOptions,
-} from './interfaces/AccountsNestModuleOptions';
-import {
-  ACCOUNTS_JS_GRAPHQL,
-  ACCOUNTS_JS_OPTIONS,
-  ACCOUNTS_JS_SERVER,
-} from './utils/accounts.constants';
+import { AccountsModuleOptions, NestAccountsOptions } from './interfaces/AccountsNestModuleOptions';
+import { ACCOUNTS_JS_GRAPHQL, ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_SERVER } from './utils/accounts.constants';
 import { buildProviders } from './utils/buildProviders';
 import { getRESTOptions } from './utils/getRestOptions';
 const debug = debuglog('nestjs-accounts');
@@ -30,6 +19,7 @@ export class AccountsJsModule implements NestModule {
    * @param {AccountsModuleOptions} metadata for the accounts module
    * @returns {DynamicModule} Nest module
    */
+  // todo: break into registerAsync to simplify things
   static register(metadata: AccountsModuleOptions): DynamicModule {
     const { accountsOptions, useServer, ...AccountsModuleOptions } = metadata;
 
