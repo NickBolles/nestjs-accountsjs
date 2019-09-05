@@ -9,6 +9,7 @@
 
 > note: currently I only have this on my personal NPM registry. If make an issue to remind me to make it public if you can't install it with `npm i @nb/nestjs-accountsjs --registry npm.nickbolles.com`
 
+### [Basic Config](./examples/basic-value-opts)
 app.module.ts
 ```typescript
 import { Module } from "@nestjs/common";
@@ -36,7 +37,7 @@ export class AppModule {}
 
 ```
 
-## With Accounts Server Instance
+### With Accounts Server Instance
 
 Alternatively you can pass the accountsjs server that you want to use to register: 
 
@@ -44,7 +45,7 @@ Alternatively you can pass the accountsjs server that you want to use to registe
 AccountsJsModule.register({useServer: accountsServerInstance})
 ```
 
-## With Options Factory Class
+### [With Options Factory Class](./examples/with-complex-class-config)
 
 app.module.ts
 ```typescript
@@ -86,13 +87,21 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
 
 > Register can take any [custom provider](https://docs.nestjs.com/fundamentals/custom-providers) format. IMHO, the useClass pattern, and breaking the options factory class into it's own file is the most clean format.
 
-## More Examples
-See the [./examples](./examples) directory for more examples
+### Examples
+- [basic-value-opts](./examples/basic-value-opts)
+- [with-complex-class-config](./examples/with-complex-class-config)
+- [with-complex-config (useFactory)](./examples/with-complex-config)
+- See the [./examples](./examples) directory for more examples
 
 ## Built in support for REST and GraphQL
 
 ### REST
 Passing `REST: true`, or a config object will enable and mount the `@accounts/rest-express` package. 
+
+### Examples
+- [with-rest](./examples/with-rest)
+- [with-rest-and-nest-router](./examples/with-rest-and-nest-router)
+- [with-rest-custom-route](./examples/with-rest-custom-route)
 
 #### Config
 
@@ -128,6 +137,10 @@ By default the path is relative to the NEST path as in the second to last exampl
 
 ### GraphQL
 The module will configure `@accounts/graphql-api` and export it as the ACCOUNTS_JS_GRAPHQL provider. This make it easy to use it with `@nestjs/graphql`
+
+#### Examples
+- [with-graphql](./examples/with-graphql)
+- [with-graphql-complex](./examples/with-graphql-complex)
 
 #### Config
 `true` to use defaults, or an object of [AccountsModuleConfig](https://accounts-js.netlify.com/docs/transports/graphql#customization)
@@ -200,7 +213,10 @@ GraphQLModule.forRootAsync({
 
 # Providers
 
-The module will register several providers for accounts js. This enables these core items for dependency injection in Nest, which can be really powerful. For example you can inject the server into your users service and add an event listener for user created, to populate the user with default data.
+### Examples
+- [with-inject-server-and-opts](./examples/with-inject-server-and-opts)
+ 
+The module will register several providers for accounts js. This enables these core items for dependency injection in Nest, which can be really powerful. For example you can inject the server into your users service and add an event listener for user created to populate the user with default data. See an example in the [with-inject-server-and-opts](./examples/with-inject-server-and-opts) example
 
 | Injector Token        | Value           | Type |
 | ------------- |:-------------:|:-----:|
@@ -210,6 +226,10 @@ The module will register several providers for accounts js. This enables these c
 
 
 # Decorators
+
+### Examples
+- [with-decorators](./examples/with-decorators)
+- [with-auth-guard](./examples/with-auth-guard)
 
 ## Param Decorators
 Decorators to match several of the request fields that accounts provides. These are compatible with both HTTP Request handlers and Graphql resolvers and helps to make code more concise and self-documenting
@@ -224,13 +244,13 @@ Decorators to match several of the request fields that accounts provides. These 
 
 ## Auth Guard
 
-2 more special decorators exist. The first is `@AuthGuard`. Auth guard, but default will check for the presence of a user on the Execution context. This can be used at either the class or the method handler level
+2 more special decorators exist. The first is `@UseGuards(AuthGuard)`. Auth guard, but default will check for the presence of a user on the Execution context. This can be used at either the class or the method handler level
 
 Class level:
 ```typescript
 class MyController {
     @Get()
-    @AuthGuard()
+    @UseGuards(AuthGuard)
     mySecret() {
         return "I used to be a jedi"
     }
@@ -239,7 +259,7 @@ class MyController {
 
 Method level:
 ```typescript
-@AuthGuard()
+@UseGuards(AuthGuard)
 class MyController {
     @Get()
     mySecret() {
@@ -252,7 +272,7 @@ With GraphQL it's exactly the same
 @Resolver()
 class MyResolver {
     @Query()
-    @AuthGuard()
+    @UseGuards(AuthGuard)
     mySecret() {
         return "I used to be a jedi"
     }
@@ -262,7 +282,7 @@ class MyResolver {
 ## AuthValidator
 The second is `@AuthValidator`, which can be used to customize the AuthGuard behavior. Validators are functions that return a boolean, or a promise that resolves to a boolean. If the result is truthy, the validator succeeds and if all validators succeed the method will be executed.
 
-Validators can be added at the class or the method level, and will stack. So in the example below the `@AuthGuard` will run the class validator, `IsDarthVader`, then it will run `TimeToReveal` and `AsyncValidator`. If any of them fail, the method will not be run.
+Validators can be added at the class or the method level, and will stack. So in the example below the `@UseGuards(AuthGuard)` will run the class validator, `IsDarthVader`, then it will run `TalkingToLuke` and `AsyncValidator`. If any of them fail, the method will not be run.
 
 ```typescript
 import { 
@@ -272,25 +292,25 @@ import {
     GQLParam } from "@nb/nestjs-accountsjs"
 import { User } from "@accounts/types"
 
-const IsDarthVader = (user: User, params: AccountsSessionRequest | GQLParam, context: ExecutionContext) => user.username = "Darth Vader"
+const IsDarthVader = (user: User, params: AccountsSessionRequest | GQLParam, context: ExecutionContext) => user.username === "Darth Vader"
 
-const TimeToReveal = (user: User, params: AccountsSessionRequest, context: ExecutionContext) => params.body.IsItTime)
+const TalkingToLuke = (user: User, params: AccountsSessionRequest, context: ExecutionContext) => params.body.talkingToLuke)
 
 const AsyncValidator = (user: User) => Promise.resolve(true);
 
 @AuthValidator(IsDarthVader)
 class DarthVader {
     @Get()
-    @AuthGuard()
-    @AuthValidator([TimeToReveal, AsyncValidator])
+    @UseGuards(AuthGuard)
+    @AuthValidator(TalkingToLuke, AsyncValidator)
     superSecret() {
-        return "I am your father"
+        return "Luke, I am your father"
     }
 }
 ```
 
 ### Making Validators Robust
-Note that TimeToReveal is HTTP specific because it uses the body to the request. We can make this a little more robust by using some of the util methods provided, such as `isGQLParam` `getGQLcontext`, `getFieldFromDecoratorParams` and `getFieldFormExecContext`.
+Note that TalkingToLuke is HTTP specific because it uses the body to the request. We can make this a little more robust by using some of the util methods provided, such as `isGQLParam` `getGQLcontext`, `getFieldFromDecoratorParams` and `getFieldFormExecContext`.
 
 
 ```typescript
@@ -306,16 +326,16 @@ import { User } from "@accounts/types"
 
 const IsDarthVader = (user: User) => user.username = "Darth Vader"
 
-const TimeToReveal = (user: User, params: AccountsSessionRequest | GQLParam, context: ExecutionContext) => isGQLParam(params) ? getGQLContext(params).TimeToReveal : params.body.timeToReveal;
+const TalkingToLuke = (user: User, params: AccountsSessionRequest | GQLParam, context: ExecutionContext) => isGQLParam(params) ? getGQLContext(params).talkingToLuke : params.body.talkingToLuke;
 
 const AsyncValidator = () => Promise.resolve(true);
 
 @Resolver()
-@AuthGuard()
+@UseGuards(AuthGuard)
 @AuthValidator(IsDarthVader)
 class DarthVader {
     @Query()
-    @AuthValidator([TimeToReveal, AsyncValidator])
+    @AuthValidator(TalkingToLuke, AsyncValidator)
     superSecret() {
         return "I am your father"
     }

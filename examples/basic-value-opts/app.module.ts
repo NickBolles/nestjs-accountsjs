@@ -2,7 +2,7 @@ import { AccountsPassword } from '@accounts/password';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
-import { AccountsJsModule } from '../../';
+import { AccountsJsModule } from '../../dist';
 import { UserDatabase } from '../shared/database.service';
 
 @Module({
