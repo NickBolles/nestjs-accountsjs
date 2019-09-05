@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { RouterModule } from 'nest-router';
 import { ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
-import { AccountsJsModule } from '../../accounts-js.module';
+import { AccountsJsModule } from '../../';
 import { UserDatabase } from '../shared/database.service';
 // tslint:disable:max-line-length
 

@@ -2,7 +2,7 @@ import { AccountsPassword } from '@accounts/password';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
-import { AccountsJsModule } from '../../accounts-js.module';
+import { AccountsJsModule } from '../../lib/accounts-js.module';
 import { UserDatabase } from '../shared/database.service';
 
 @Module({
@@ -16,6 +16,8 @@ import { UserDatabase } from '../shared/database.service';
        *
        * WARNING: Anything injected into the factory MUST be available to the AccountsJsModule as a provider.
        *          In other words, make sure you add it to the providers array in the AccountsJsModule register options.
+       *
+       * Note: ussually using a class for configuratino is much cleaner than a factory
        */
       accountsOptions: {
         // provide: ACCOUNTS_JS_OPTIONS // This is defaulted in by the module
