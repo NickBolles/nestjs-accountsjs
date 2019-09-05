@@ -7,7 +7,7 @@
 
 `npm i @nb/nestjs-accountsjs`
 
-> note: currently I only have this on my personal NPM registry. If make an issue to remind me to make it public if you can't install it with `npm i @nb/nestjs-accountsjs --registry npm.nickbolles.com`
+> note: currently I only have this on my personal NPM registry. Make an issue to remind me to make it public if you can't install it with `npm i @nb/nestjs-accountsjs --registry npm.nickbolles.com`
 
 ### [Basic Config](./examples/basic-value-opts)
 app.module.ts
@@ -349,5 +349,3 @@ class DarthVader {
 
 This module will mount The `AccountsSessionInterceptor` to initialize the session. This is registered as an `APP_INTERCEPTOR`, so it will be in effect for the entire app. This is also required for any of the decorators to function correctly.
 
-
-## 
