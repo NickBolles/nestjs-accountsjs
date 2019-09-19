@@ -1,11 +1,27 @@
 import { Provider } from '@nestjs/common';
 import { AccountsSessionInterceptorProvider } from '../interceptors/ResumeSession.interceptor';
-import { AccountsModuleOptions } from '../interfaces/AccountsNestModuleOptions';
+import { AccountsModuleOptions, AccountsOptions } from '../interfaces/AccountsNestModuleOptions';
 import { accountsOptionsToProvider } from '../providers/AccountsOptions.provider';
 import { AccountsServerProvider } from '../providers/AccountsServer.provider';
 import { ACCOUNTS_JS_SERVER } from './accounts.constants';
 import { GraphQLModuleProvider } from '../providers/GraphQLModule';
+import AccountsServer from '@accounts/server';
 
+export function buildProviders(options: AccountsOptions, server?: AccountsServer): Provider[] {
+  if (!server || !(server instanceof AccountsServer)) {
+    return buildAsyncProviders(options);
+  }
+
+  return [
+    AccountsSessionInterceptorProvider,
+    accountsOptionsToProvider(options),
+    {
+      provide: ACCOUNTS_JS_SERVER,
+      useValue: server,
+    },
+    GraphQLModuleProvider,
+  ];
+}
 /**
  * Check and get the providers from the options passed in.
  * This will create the custom providers for the ACCOUNTS_JS_SERVER and ACCOUNTS_JS_OPTIONS
@@ -16,27 +32,14 @@ import { GraphQLModuleProvider } from '../providers/GraphQLModule';
  * s
  * @param {AccountsModuleOptions} options for the accounts module
  */
-export function buildProviders(options: AccountsModuleOptions): Provider[] {
-  const { useServer, accountsOptions, providers = [] } = options;
-
-  if (useServer && accountsOptions) {
-    throw new Error('accountsOptions will be ignored when passing an existing server instance');
-  }
-
-  let serverProvider: Provider = AccountsServerProvider;
-  // If an existing server instance is passed in, use that instead of the factory
-  if (useServer) {
-    serverProvider = {
-      provide: ACCOUNTS_JS_SERVER,
-      useValue: useServer,
-    };
-  }
+export function buildAsyncProviders(options: AccountsModuleOptions): Provider[] {
+  const { providers = [], ...accountsOptions } = options;
 
   return [
     ...providers,
     AccountsSessionInterceptorProvider,
     accountsOptionsToProvider(accountsOptions),
-    serverProvider,
+    AccountsServerProvider,
     GraphQLModuleProvider,
   ];
 }

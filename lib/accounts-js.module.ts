@@ -5,14 +5,37 @@ import { MODULE_PATH } from '@nestjs/common/constants';
 import { DynamicModule, MiddlewareConsumer, NestModule } from '@nestjs/common/interfaces';
 import { resolve } from 'url';
 import { debuglog } from 'util';
-import { AccountsModuleOptions, NestAccountsOptions } from './interfaces/AccountsNestModuleOptions';
+import { AccountsModuleOptions, NestAccountsOptions, AccountsOptions } from './interfaces/AccountsNestModuleOptions';
 import { ACCOUNTS_JS_GRAPHQL, ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_SERVER } from './utils/accounts.constants';
-import { buildProviders } from './utils/buildProviders';
+import { buildAsyncProviders, buildProviders } from './utils/buildProviders';
 import { getRESTOptions } from './utils/getRestOptions';
+import { extractModuleMetadata } from './utils/extractModuleOptions';
 const debug = debuglog('nestjs-accounts');
+
+type NonServerNestAccountsOptions = Omit<NestAccountsOptions, 'serverOptions' | 'services'>;
 
 @Module({})
 export class AccountsJsModule implements NestModule {
+  static register(server: AccountsServer, options?: NonServerNestAccountsOptions): DynamicModule;
+  static register(options?: AccountsOptions): DynamicModule;
+  static register(
+    serverOrOptions: AccountsServer | AccountsOptions,
+    options?: NonServerNestAccountsOptions,
+  ): DynamicModule {
+    let providers = [];
+
+    if (serverOrOptions instanceof AccountsServer) {
+      providers = buildProviders(options, serverOrOptions);
+    } else {
+      providers = buildProviders(serverOrOptions);
+    }
+
+    return {
+      module: AccountsJsModule,
+      providers,
+      exports: [ACCOUNTS_JS_SERVER, ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_GRAPHQL],
+    };
+  }
   /**
    * Register and configure the AccountsJsModule.
    *
@@ -20,13 +43,11 @@ export class AccountsJsModule implements NestModule {
    * @returns {DynamicModule} Nest module
    */
   // todo: break into registerAsync to simplify things
-  static register(metadata: AccountsModuleOptions): DynamicModule {
-    const { accountsOptions, useServer, ...AccountsModuleOptions } = metadata;
-
+  static registerAsync(metadata: AccountsModuleOptions): DynamicModule {
     return {
       module: AccountsJsModule,
-      ...AccountsModuleOptions,
-      providers: buildProviders(metadata),
+      ...extractModuleMetadata(metadata),
+      providers: buildAsyncProviders(metadata),
       exports: [ACCOUNTS_JS_SERVER, ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_GRAPHQL],
     };
   }
