@@ -19,7 +19,7 @@ export interface NestAccountsExpressOptions extends AccountsExpressOptions {
   /**
    * @default false
    */
-  relative?: boolean;
+  ignoreNestRoute?: boolean;
 }
 
 /**
