@@ -14,7 +14,7 @@ export function buildProviders(options: AccountsOptions, server?: AccountsServer
 
   return [
     AccountsSessionInterceptorProvider,
-    accountsOptionsToProvider(options),
+    ...accountsOptionsToProvider(options),
     {
       provide: ACCOUNTS_JS_SERVER,
       useValue: server,
@@ -38,7 +38,7 @@ export function buildAsyncProviders(options: AccountsModuleOptions): Provider[] 
   return [
     ...providers,
     AccountsSessionInterceptorProvider,
-    accountsOptionsToProvider(accountsOptions),
+    ...accountsOptionsToProvider(accountsOptions),
     AccountsServerProvider,
     GraphQLModuleProvider,
   ];

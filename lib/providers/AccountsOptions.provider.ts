@@ -6,7 +6,6 @@ import {
 } from '../interfaces/AccountsNestModuleOptions';
 import { ACCOUNTS_JS_OPTIONS } from '../utils/accounts.constants';
 import { isProvider, isClassProvider, isExistingProvider } from '../utils/typeguards';
-import { ClassProvider, ExistingProvider } from '@nestjs/common/interfaces';
 
 /**
  * Takes the accounts options and coerces it to a custom Nest provider.
@@ -18,26 +17,35 @@ import { ClassProvider, ExistingProvider } from '@nestjs/common/interfaces';
  *
  * @param {AccountsOptions} options Either a POJO to use, or a Nest Custom provider
  */
-export function accountsOptionsToProvider(options: AccountsOptions): NestAccountsOptionsProvider {
+export function accountsOptionsToProvider(options: AccountsOptions): NestAccountsOptionsProvider[] {
   let accountsProvider: NestAccountsOptionsProvider;
 
   if (!isProvider(options)) {
-    return {
-      provide: ACCOUNTS_JS_OPTIONS,
-      useValue: options as NestAccountsOptions,
-    };
+    return [
+      {
+        provide: ACCOUNTS_JS_OPTIONS,
+        useValue: options as NestAccountsOptions,
+      },
+    ];
   }
 
   if (isClassProvider(options) || isExistingProvider(options)) {
-    return {
-      provide: ACCOUNTS_JS_OPTIONS,
-      inject: [(options as ClassProvider).useClass || (options as ExistingProvider).useExisting],
-      useFactory: async (optionsFactory: AccountsOptionsFactory) => await optionsFactory.createAccountsOptions(),
-    };
+    const { useClass, useExisting } = options as any;
+    let FactoryProvider = { provide: useClass, useClass };
+    return [
+      FactoryProvider,
+      {
+        provide: ACCOUNTS_JS_OPTIONS,
+        inject: [useClass || useExisting],
+        useFactory: async (optionsFactory: AccountsOptionsFactory) => await optionsFactory.createAccountsOptions(),
+      },
+    ];
   }
 
-  return {
-    ...options,
-    provide: ACCOUNTS_JS_OPTIONS,
-  };
+  return [
+    {
+      ...options,
+      provide: ACCOUNTS_JS_OPTIONS,
+    },
+  ];
 }
