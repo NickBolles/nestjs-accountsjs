@@ -17,9 +17,9 @@ type NonServerNestAccountsOptions = Omit<NestAccountsOptions, 'serverOptions' | 
 @Module({})
 export class AccountsJsModule implements NestModule {
   static register(server: AccountsServer, options?: NonServerNestAccountsOptions): DynamicModule;
-  static register(options?: AccountsOptions): DynamicModule;
+  static register(options?: NestAccountsOptions): DynamicModule;
   static register(
-    serverOrOptions: AccountsServer | AccountsOptions,
+    serverOrOptions: AccountsServer | NestAccountsOptions,
     options?: NonServerNestAccountsOptions,
   ): DynamicModule {
     let providers = [];
@@ -63,15 +63,14 @@ export class AccountsJsModule implements NestModule {
    */
   configure(consumer: MiddlewareConsumer) {
     if (this.options.REST) {
-      const { path, relative = true, ...opts } = getRESTOptions(this.options);
+      const { path, ignoreNestRoute, ...opts } = getRESTOptions(this.options);
       const nestPath = Reflect.getMetadata(MODULE_PATH, AccountsJsModule);
 
       let pathToUse: string;
-      if (relative && nestPath) {
+      if (!ignoreNestRoute && nestPath) {
         pathToUse = resolve(nestPath, path || '');
       } else {
-        // absolute path
-        pathToUse = path || '/accounts';
+        pathToUse = resolve('/', path || '/accounts');
       }
 
       debug(`mounting @accounts/rest-express on path '${pathToUse}'`);
