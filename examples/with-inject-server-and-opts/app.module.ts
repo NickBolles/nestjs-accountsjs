@@ -30,7 +30,7 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
 @Module({
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
-    AccountsJsModule.register({
+    AccountsJsModule.registerAsync({
       /**
        * The accountsOptions is treated as a nest Custom Provider. This means that we can do some pretty
        * powerful stuff when we take advantage of Nests dependency injection, including seemless configuration
@@ -39,7 +39,7 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
        * WARNING: Anything injected into the factory MUST be available to the AccountsJsModule as a provider.
        *          In other words, make sure you add it to the providers array in the AccountsJsModule register options.
        */
-      accountsOptions: { useClass: AppAccountsOptionsFactory },
+      useClass: AppAccountsOptionsFactory,
     }),
   ],
   providers: [UserDatabase, UserService, ConfigService],

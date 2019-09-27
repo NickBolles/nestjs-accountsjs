@@ -1,15 +1,11 @@
 import { AccountsPassword } from '@accounts/password';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from 'nestjs-config';
-import { resolve } from 'path';
 import { AccountsJsModule } from '../../dist';
 import { UserDatabase } from '../shared/database.service';
 
 @Module({
   imports: [
-    ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
-    AccountsJsModule.registerAsync({
-      providers: [UserDatabase],
+    AccountsJsModule.register({
       serverOptions: {
         db: new UserDatabase(),
         tokenSecret: 'secret',

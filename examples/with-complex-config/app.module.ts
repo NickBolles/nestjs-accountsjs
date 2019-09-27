@@ -8,7 +8,7 @@ import { UserDatabase } from '../shared/database.service';
 @Module({
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
-    AccountsJsModule.register({
+    AccountsJsModule.registerAsync({
       /**
        * The accountsOptions is treated as a nest Custom Provider. This means that we can do some pretty
        * powerful stuff when we take advantage of Nests dependency injection, including seemless configuration
@@ -19,27 +19,28 @@ import { UserDatabase } from '../shared/database.service';
        *
        * Note: ussually using a class for configuratino is much cleaner than a factory
        */
-      accountsOptions: {
-        // provide: ACCOUNTS_JS_OPTIONS // This is defaulted in by the module
-        useFactory: (userDatabase: UserDatabase, configService: ConfigService) => {
-          return {
-            serverOptions: {
-              db: userDatabase,
-              tokenSecret: configService.get('auth.tokenSecret'),
-            },
-            services: {
-              password: new AccountsPassword(),
-            },
-            REST: {
-              path: configService.get('auth.path'),
-            },
-          };
-        },
-        /**
-         * This is where we can inject anything from nuxt. This array will be passed in in this order to useFactory
-         */
-        inject: [UserDatabase, ConfigService],
+
+      // provide: ACCOUNTS_JS_OPTIONS // This is defaulted in by the module
+      useFactory: (userDatabase: UserDatabase, configService: ConfigService) => {
+        return {
+          serverOptions: {
+            db: userDatabase,
+            tokenSecret: configService.get('auth.tokenSecret'),
+          },
+          services: {
+            password: new AccountsPassword(),
+          },
+          REST: {
+            path: configService.get('auth.path'),
+            ignoreNestRoute: configService.get('auth.ignoreNestRoute'),
+          },
+        };
       },
+      /**
+       * This is where we can inject anything from nest. This array will be passed in in this order to useFactory
+       */
+      inject: [UserDatabase, ConfigService],
+
       /**
        * This is where we have to define anything that we are injecting into the useFactory function
        */

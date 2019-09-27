@@ -69,8 +69,8 @@ class AppGraphQLOptionsFactory implements GqlOptionsFactory {
   providers: [UserDatabase],
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
-    AccountsJsModule.register({
-      accountsOptions: { useClass: AppAccountsJSOptionsFactory },
+    AccountsJsModule.registerAsync({
+      useClass: AppAccountsJSOptionsFactory,
     }),
     /**
      * Now we need to build the graphql module
