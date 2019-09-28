@@ -3659,6 +3659,11 @@ jest-snapshot@^24.9.0:
     pretty-format "^24.9.0"
     semver "^6.2.0"
 
+jest-summarizing-reporter@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/jest-summarizing-reporter/-/jest-summarizing-reporter-1.1.2.tgz#719c9630eef6143b681d1d6c69e565e3e4cc3149"
+  integrity sha512-TlpiWp4Vo6lqAMZM0t5i3/eiMTyV7qk0rt1bMrb/lX+RzygzYbLC/aZSZNWnLY6zoQa3Y8/cbMIQNBAqVjHxNg==
+
 jest-util@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-24.9.0.tgz#7396814e48536d2e85a37de3e4c431d7cb140162"
