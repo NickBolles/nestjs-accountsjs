@@ -3,7 +3,7 @@ import { Module, Inject } from '@nestjs/common';
 import { ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
 // replace the below line with "import { AccountsJsModule } from '@nb/accountsjs-nest';"
-import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNestAccountsOptions } from '../../';
+import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNestAccountsOptions } from '../../dist';
 import { UserDatabase } from '../shared/database.service';
 import { GraphQLModule, GqlOptionsFactory, GqlModuleOptions } from '@nestjs/graphql';
 import { AccountsModule } from '@accounts/graphql-api';
@@ -28,7 +28,6 @@ class AppAccountsJSOptionsFactory implements AccountsOptionsFactory {
          * the one that's resolved you can pass it though.
          *
          */
-
         // accountsServer: yourServer
         /**
          * Any other Graphql module options
@@ -36,16 +35,11 @@ class AppAccountsJSOptionsFactory implements AccountsOptionsFactory {
          *
          * note that the defaults are probably good for you, but the option's there
          */
-        headerName: 'MyCustomHeader', // default "Authorization"
-        rootQueryName: 'RootQuery', // default "Query"
-        rootMutationName: 'RootMutation', // default "Mutation"
-        withSchemaDefinition: true, // default: false
-        userAsInterface: true, // default: false
-        /**
-         * For more on extending the user type see the accounts-js documentation
-         * https://accounts-js.netlify.com/docs/transports/graphql#extending-user
-         *
-         */
+        //headerName: 'MyCustomHeader', // default "Authorization"
+        //rootQueryName: 'RootQuery', // default "Query"
+        //rootMutationName: 'RootMutation', // default "Mutation"
+        //withSchemaDefinition: true, // default: false
+        //userAsInterface: true, // default: false
       },
     };
   }
@@ -67,15 +61,23 @@ class AppGraphQLOptionsFactory implements GqlOptionsFactory {
 
 @Module({
   providers: [UserDatabase],
+  exports: [UserDatabase],
+})
+class UserModule {}
+
+const AppAccountsModule = AccountsJsModule.registerAsync({
+  imports: [UserModule],
+  useClass: AppAccountsJSOptionsFactory,
+});
+
+@Module({
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
-    AccountsJsModule.registerAsync({
-      useClass: AppAccountsJSOptionsFactory,
-    }),
+    UserModule,
     /**
      * Now we need to build the graphql module
      */
-    GraphQLModule.forRootAsync({ useClass: AppGraphQLOptionsFactory }),
+    GraphQLModule.forRootAsync({ imports: [AppAccountsModule], useClass: AppGraphQLOptionsFactory }),
   ],
 })
 export class AppModule {}
