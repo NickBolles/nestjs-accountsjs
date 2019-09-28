@@ -1,6 +1,6 @@
 {
   "name": "@nb/nestjs-accountsjs",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Use Accounts JS in nest like a pro",
   "main": "dist/index.js",
   "files": [
