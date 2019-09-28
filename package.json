@@ -25,6 +25,8 @@
   "author": "Nick Bolles <me@nickbolles.com>",
   "license": "ISC",
   "devDependencies": {
+    "@accounts/client-password": "^0.19.0",
+    "@accounts/graphql-client": "^0.19.0",
     "@accounts/password": "^0.19.0",
     "@graphql-modules/core": "^0.7.12",
     "@nestjs/common": "^6.6.4",
@@ -37,6 +39,7 @@
     "@types/shelljs": "^0.8.5",
     "@types/supertest": "^2.0.8",
     "apollo-server-express": "^2.7.0",
+    "apollo-server-testing": "^2.9.4",
     "husky": "3.0.5",
     "jest": "24.9.0",
     "jest-summarizing-reporter": "^1.1.2",

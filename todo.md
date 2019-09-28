@@ -7,3 +7,5 @@
 4. ~~Getting started doc~~
 5. ~~Tests for paths~~
 6. Update readme
+7. Update Accountsjs Documentation
+   1. https://accounts-js.netlify.com/docs/transports/rest-client/
