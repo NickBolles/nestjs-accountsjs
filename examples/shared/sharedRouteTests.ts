@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { RouterModule } from 'nest-router';
 import { AccountsJsModule } from '../../lib/accounts-js.module';
+import { MODULE_PATH } from '@nestjs/common/constants';
 
 interface PreCompileFixtureFn {
   (module: TestingModuleBuilder, path: string, expectedRootPath: string): Promise<void>;
@@ -17,6 +18,7 @@ export function sharedRoutesTests(AppModule: any, pathTables: RouteTestEntry[], 
 
       beforeAll(async () => {
         const imports = [];
+        // If there's a relative route setup NestRouter
         if (relativePath)
           imports.push(RouterModule.forRoutes([{ module: AccountsJsModule, path: relativePath as any }]));
 
@@ -26,6 +28,9 @@ export function sharedRoutesTests(AppModule: any, pathTables: RouteTestEntry[], 
           .overrideProvider(ConfigService)
           .useValue(configForPath(path as any, ignoreNestRoute as any))
           .compile();
+        // const module = moduleFixture.get(AccountsJsModule);
+        // console.log("=".repeat(50))
+        // console.log("module path is: ",Reflect.getMetadata(MODULE_PATH, AccountsJsModule));
 
         app = moduleFixture.createNestApplication();
         await app.init();

@@ -1,37 +1,19 @@
 import { AccountsPassword } from '@accounts/password';
-import { Module } from '@nestjs/common';
+import { Module, Inject } from '@nestjs/common';
 import { RouterModule } from 'nest-router';
-import { ConfigModule } from 'nestjs-config';
+import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
-import { AccountsJsModule } from '../../';
+import { AccountsJsModule, AccountsOptionsFactory, AsyncNestAccountsOptions } from '../../';
 import { UserDatabase } from '../shared/database.service';
 // tslint:disable:max-line-length
 
-/**
- * Define the routes for the app
- */
-const routes = [
-  {
-    path: '/app',
-    children: [{ path: '/auth', module: AccountsJsModule }],
-  },
-];
-
-@Module({
-  imports: [
-    /**
-     * Mount the router module for the configured routes
-     */
-    RouterModule.forRoutes(routes),
-    ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
-    AccountsJsModule.register({
-      /**
-       * This is just a POJO, but you can always use a provider, see the complex config example
-       */
-
+export class AppAccountsOptionsFactory implements AccountsOptionsFactory {
+  constructor(@Inject(ConfigService) private readonly configService: ConfigService) {}
+  createAccountsOptions(): AsyncNestAccountsOptions {
+    return {
       serverOptions: {
         db: new UserDatabase(),
-        tokenSecret: 'secret',
+        tokenSecret: this.configService.get('auth.tokenSecret'),
       },
       services: {
         password: new AccountsPassword(),
@@ -49,12 +31,36 @@ const routes = [
          * If there is not a MODULE_PATH, or relative = false, it behaves the same as normal. The Path is absolute to the server's root
          *
          */
-        path: '/myroute', // route examples: /auth/myroute/user, /auth/myroute/:service/authenticate, /auth/myroute/password/register etc.
+        //path: '/myroute', // route examples: /auth/myroute/user, /auth/myroute/:service/authenticate, /auth/myroute/password/register etc.
         // path: "", // DEFAULT - route examples: /auth/user, /auth/:service/authenticate, /auth/password/register etc.
         // path: "/myroute", relative: false // examples: /myroute/user,  /myroute/:service/authenticate, /myroute/password/register etc.
         // relative: false // examples: /accounts/user,  /accounts/:service/authenticate, /accounts/password/register etc.
+
+        path: this.configService.get('auth.path'),
+        ignoreNestRoute: this.configService.get('auth.ignoreNestRoute'),
       },
-    }),
+    };
+  }
+}
+
+/**
+ * Define the routes for the app
+ */
+const routes = [
+  {
+    path: '/app',
+    children: [{ path: '/auth', module: AccountsJsModule }],
+  },
+];
+
+@Module({
+  imports: [
+    /**
+     * Mount the router module for the configured routes
+     */
+    RouterModule.forRoutes(routes),
+    ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')), // mostly just for testing and injecting the path settings
+    AccountsJsModule.registerAsync({ useClass: AppAccountsOptionsFactory }),
   ],
 })
 export class AppModule {}

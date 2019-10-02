@@ -3,7 +3,7 @@ import { Module, Inject } from '@nestjs/common';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
 import { UserDatabase } from '../shared/database.service';
-import { AccountsOptionsFactory, AsyncNestAccountsOptions, AccountsJsModule } from '../../';
+import { AccountsOptionsFactory, AsyncNestAccountsOptions, AccountsJsModule } from '../../dist';
 import { UserService } from './UserService';
 
 class AppAccountsOptionsFactory implements AccountsOptionsFactory {
