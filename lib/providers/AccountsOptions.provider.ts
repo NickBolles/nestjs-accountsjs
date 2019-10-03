@@ -1,8 +1,8 @@
 import {
-  AccountsOptions,
   NestAccountsOptions,
   NestAccountsOptionsProvider,
   AccountsOptionsFactory,
+  AsyncNestAccountsOptions,
 } from '../interfaces/AccountsNestModuleOptions';
 import { ACCOUNTS_JS_OPTIONS } from '../utils/accounts.constants';
 import { isProvider, isClassProvider, isExistingProvider } from '../utils/typeguards';
@@ -17,7 +17,7 @@ import { isProvider, isClassProvider, isExistingProvider } from '../utils/typegu
  *
  * @param {AccountsOptions} options Either a POJO to use, or a Nest Custom provider
  */
-export function accountsOptionsToProvider(options: AccountsOptions): NestAccountsOptionsProvider[] {
+export function accountsOptionsToProvider(options: AsyncNestAccountsOptions): NestAccountsOptionsProvider[] {
   let accountsProvider: NestAccountsOptionsProvider;
 
   if (!isProvider(options)) {

@@ -73,26 +73,13 @@ export type NestAccountsOptionsProvider =
  */
 export type NestAccountsOptionsPartialProvider = Omit<NestAccountsOptionsProvider, 'provide'>;
 
-/**
- * AccountsOptions interface, any of these are valid inputs for the accountsOptions property of AccountsModuleOptions
- */
-export type AsyncAccountsOptions = NestAccountsOptionsProvider | NestAccountsOptionsPartialProvider;
-
 //#endregion Interfaces for ways to provide NestAccountsOptions
 
 /**
- * We have 3 levels of options
- * First, Nest module options. This should contain the top module level options and extends the default nest module options
- * Second, we have the options for how the components in the module should be have, this is the NestAccountsOptions
- * Third, we have the accounts server options, Accounts server services, Rest and GraphQL Settings
- */
-
-/**
- * Options for the actual AccountsJs Nest Module.
+ * Options for the actual AccountsJs Nest Module register async function
  *
  * Supports sending any valid Nest properties that you would normally set on a module, as well as using a custom provider
  */
 
-export type AsyncNestAccountsOptions =
-  | NestAccountsOptionsProvider
-  | NestAccountsOptionsPartialProvider & Partial<ModuleMetadata>;
+export type AsyncNestAccountsOptions = (NestAccountsOptionsProvider | NestAccountsOptionsPartialProvider) &
+  Partial<ModuleMetadata>;

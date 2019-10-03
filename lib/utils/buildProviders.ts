@@ -1,13 +1,13 @@
 import { Provider } from '@nestjs/common';
 import { AccountsSessionInterceptorProvider } from '../interceptors/ResumeSession.interceptor';
-import { AccountsModuleOptions, AccountsOptions } from '../interfaces/AccountsNestModuleOptions';
+import { AsyncNestAccountsOptions } from '../interfaces/AccountsNestModuleOptions';
 import { accountsOptionsToProvider } from '../providers/AccountsOptions.provider';
 import { AccountsServerProvider } from '../providers/AccountsServer.provider';
 import { ACCOUNTS_JS_SERVER } from './accounts.constants';
 import { GraphQLModuleProvider } from '../providers/GraphQLModule';
 import AccountsServer from '@accounts/server';
 
-export function buildProviders(options: AccountsOptions, server?: AccountsServer): Provider[] {
+export function buildProviders(options: AsyncNestAccountsOptions, server?: AccountsServer): Provider[] {
   if (!server || !(server instanceof AccountsServer)) {
     return buildAsyncProviders(options);
   }
@@ -30,9 +30,9 @@ export function buildProviders(options: AccountsOptions, server?: AccountsServer
  * This will also create the AccountsSessionInterceptor as a global interceptor
  * so that the accounts session is restored on every request.
  * s
- * @param {AccountsModuleOptions} options for the accounts module
+ * @param {AsyncNestAccountsOptions} options for the accounts module
  */
-export function buildAsyncProviders(options: AccountsModuleOptions): Provider[] {
+export function buildAsyncProviders(options: AsyncNestAccountsOptions): Provider[] {
   const { providers = [], ...accountsOptions } = options;
 
   return [
