@@ -50,21 +50,21 @@ export interface NestAccountsOptions {
   GraphQL?: NestAccountsGraphQLOptions | boolean;
 }
 
-export type AsyncNestAccountsOptions = Promise<NestAccountsOptions> | NestAccountsOptions;
+export type NestAccountsOptionsPromise = Promise<NestAccountsOptions> | NestAccountsOptions;
 
 //#region Interfaces for ways to provide NestAccountsOptions
 /**
  * Factory class interface
  */
 export interface AccountsOptionsFactory {
-  createAccountsOptions(): AsyncNestAccountsOptions;
+  createAccountsOptions(): NestAccountsOptionsPromise;
 }
 /**
  * Nest custom provider for NestAccountsOptions
  */
 export type NestAccountsOptionsProvider =
-  | ValueProvider<AsyncNestAccountsOptions>
-  | FactoryProvider<AsyncNestAccountsOptions>
+  | ValueProvider<NestAccountsOptionsPromise>
+  | FactoryProvider<NestAccountsOptionsPromise>
   | ClassProvider<AccountsOptionsFactory>
   | ExistingProvider<AccountsOptionsFactory>;
 
@@ -76,7 +76,7 @@ export type NestAccountsOptionsPartialProvider = Omit<NestAccountsOptionsProvide
 /**
  * AccountsOptions interface, any of these are valid inputs for the accountsOptions property of AccountsModuleOptions
  */
-export type AccountsOptions = NestAccountsOptions | NestAccountsOptionsProvider | NestAccountsOptionsPartialProvider;
+export type AsyncAccountsOptions = NestAccountsOptionsProvider | NestAccountsOptionsPartialProvider;
 
 //#endregion Interfaces for ways to provide NestAccountsOptions
 
@@ -93,4 +93,6 @@ export type AccountsOptions = NestAccountsOptions | NestAccountsOptionsProvider 
  * Supports sending any valid Nest properties that you would normally set on a module, as well as using a custom provider
  */
 
-export type AccountsModuleOptions = AccountsOptions & Partial<ModuleMetadata>;
+export type AsyncNestAccountsOptions =
+  | NestAccountsOptionsProvider
+  | NestAccountsOptionsPartialProvider & Partial<ModuleMetadata>;

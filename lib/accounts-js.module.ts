@@ -5,7 +5,7 @@ import { MODULE_PATH } from '@nestjs/common/constants';
 import { DynamicModule, MiddlewareConsumer, NestModule } from '@nestjs/common/interfaces';
 import { resolve } from 'url';
 import { debuglog } from 'util';
-import { AccountsModuleOptions, NestAccountsOptions, AccountsOptions } from './interfaces/AccountsNestModuleOptions';
+import { NestAccountsOptions, AsyncNestAccountsOptions } from './interfaces/AccountsNestModuleOptions';
 import { ACCOUNTS_JS_GRAPHQL, ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_SERVER } from './utils/accounts.constants';
 import { buildAsyncProviders, buildProviders } from './utils/buildProviders';
 import { getRESTOptions } from './utils/getRestOptions';
@@ -39,11 +39,11 @@ export class AccountsJsModule implements NestModule {
   /**
    * Register and configure the AccountsJsModule.
    *
-   * @param {AccountsModuleOptions} metadata for the accounts module
+   * @param {AsyncNestAccountsOptions} metadata for the accounts module
    * @returns {DynamicModule} Nest module
    */
   // todo: break into registerAsync to simplify things
-  static registerAsync(metadata: AccountsModuleOptions): DynamicModule {
+  static registerAsync(metadata: AsyncNestAccountsOptions): DynamicModule {
     return {
       module: AccountsJsModule,
       ...extractModuleMetadata(metadata),
