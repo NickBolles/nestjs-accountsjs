@@ -2,7 +2,12 @@
 2. create examples for configurations
    1. ~~Test the examples?~~
    2. Finish examples
+      1. 
    3. Finish testing examples
+      1. router
+      2. auth guar
+      3. decorators
+      4. inject server
 3. ~~Create Auth Guard~~
 4. ~~Getting started doc~~
 5. ~~Tests for paths~~
