@@ -20,7 +20,8 @@
     "publish:next": "npm publish --access public --tag next",
     "test:e2e": "jest --config ./tests/jest-e2e.json",
     "pretest:examples": "npm run build",
-    "test:examples": "cd examples && tsc && jest --config ./jest-e2e.json"
+    "test:examples": "cd examples && tsc && jest --config ./jest-e2e.json --runInBand",
+    "test:examples:debug": "cd examples && tsc && node --inspect-brk ../node_modules/.bin/jest --config ./jest-e2e.json --runInBand"
   },
   "author": "Nick Bolles <me@nickbolles.com>",
   "license": "ISC",
@@ -28,18 +29,22 @@
     "@accounts/client-password": "^0.19.0",
     "@accounts/graphql-client": "^0.19.0",
     "@accounts/password": "^0.19.0",
-    "@graphql-modules/core": "^0.7.12",
-    "@nestjs/common": "^6.6.4",
-    "@nestjs/core": "^6.6.4",
-    "@nestjs/graphql": "^6.5.0",
-    "@nestjs/platform-express": "^6.6.4",
-    "@nestjs/testing": "^6.6.4",
+    "@accounts/types": "^0.19.0",
+    "@graphql-modules/core": "^0.7.13",
+    "@nestjs/common": "^6.8.3",
+    "@nestjs/core": "^6.8.3",
+    "@nestjs/graphql": "^6.5.3",
+    "@nestjs/platform-express": "^6.8.3",
+    "@nestjs/testing": "^6.8.3",
+    "@types/gravatar": "^1.8.0",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.3",
     "@types/shelljs": "^0.8.5",
     "@types/supertest": "^2.0.8",
     "apollo-server-express": "^2.7.0",
     "apollo-server-testing": "^2.9.4",
+    "graphql": "^14.5.8",
+    "gravatar": "^1.8.0",
     "husky": "3.0.5",
     "jest": "24.9.0",
     "jest-summarizing-reporter": "^1.1.2",
@@ -71,8 +76,7 @@
   "dependencies": {
     "@accounts/graphql-api": "0.*",
     "@accounts/rest-express": "0.*",
-    "@accounts/server": "0.*",
-    "@accounts/types": "0.*"
+    "@accounts/server": "0.*"
   },
   "directories": {
     "example": "examples",

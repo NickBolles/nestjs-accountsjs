@@ -19,3 +19,4 @@ test-schema.graphql
 
 # dist
 /dist
+examples/with-auth-guard/__schema.graphql

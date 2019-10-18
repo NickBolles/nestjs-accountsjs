@@ -8,6 +8,6 @@
     "reporters": [
       ["jest-summarizing-reporter", {"diffs": true}]
     ],
-    "verbose": false
+    "verbose": true
   }
   
