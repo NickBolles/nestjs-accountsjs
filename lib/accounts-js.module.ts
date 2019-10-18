@@ -3,13 +3,14 @@ import AccountsServer from '@accounts/server';
 import { Inject, Module } from '@nestjs/common';
 import { MODULE_PATH } from '@nestjs/common/constants';
 import { DynamicModule, MiddlewareConsumer, NestModule } from '@nestjs/common/interfaces';
+import { join, normalize } from 'path';
 import { resolve } from 'url';
 import { debuglog } from 'util';
-import { NestAccountsOptions, AsyncNestAccountsOptions } from './interfaces/AccountsNestModuleOptions';
+import { AsyncNestAccountsOptions, NestAccountsOptions } from './interfaces/AccountsNestModuleOptions';
 import { ACCOUNTS_JS_GRAPHQL, ACCOUNTS_JS_OPTIONS, ACCOUNTS_JS_SERVER } from './utils/accounts.constants';
 import { buildAsyncProviders, buildProviders } from './utils/buildProviders';
-import { getRESTOptions } from './utils/getRestOptions';
 import { extractModuleMetadata } from './utils/extractModuleOptions';
+import { getRESTOptions } from './utils/getRestOptions';
 const debug = debuglog('nestjs-accounts');
 
 type NonServerNestAccountsOptions = Omit<NestAccountsOptions, 'serverOptions' | 'services'>;
@@ -42,7 +43,6 @@ export class AccountsJsModule implements NestModule {
    * @param {AsyncNestAccountsOptions} metadata for the accounts module
    * @returns {DynamicModule} Nest module
    */
-  // todo: break into registerAsync to simplify things
   static registerAsync(metadata: AsyncNestAccountsOptions): DynamicModule {
     return {
       module: AccountsJsModule,
@@ -64,14 +64,15 @@ export class AccountsJsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     if (this.options.REST) {
       const { path, ignoreNestRoute, ...opts } = getRESTOptions(this.options);
-      const nestPath = Reflect.getMetadata(MODULE_PATH, AccountsJsModule);
+      let nestPath = Reflect.getMetadata(MODULE_PATH, AccountsJsModule);
 
       let pathToUse: string;
       if (!ignoreNestRoute && nestPath) {
-        pathToUse = resolve(nestPath, path || '');
+        pathToUse = resolve(join(nestPath, '/'), path || '');
       } else {
         pathToUse = resolve('/', path || '/accounts');
       }
+      pathToUse = normalize(pathToUse);
 
       debug(`mounting @accounts/rest-express on path '${pathToUse}'`);
       consumer
