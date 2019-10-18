@@ -20,7 +20,6 @@ import { AccountsJsModule } from "@nb/nestjs-accountsjs";
 @Module({
   imports: [
     AccountsJsModule.register({
-      accountsOptions: {
         serverOptions: { // Options passed to the AccountsServer instance
           db: new Mongo(),
           tokenSecret: "secret",
@@ -57,7 +56,7 @@ import { AppAccountsOptionsFactory } from "./AppAccountsOptionsFactory"
 
 @Module({
   imports: [
-    AccountsJsModule.register({ accountsOptions: { useClass: AppAccountsOptionsFactory } })
+    AccountsJsModule.registerAsync( { useClass: AppAccountsOptionsFactory })
   ]
 })
 export class AppModule {}
@@ -69,7 +68,7 @@ AppAccountsOptionsFactory.ts
 class AppAccountsOptionsFactory implements AccountsOptionsFactory {
   constructor(@Inject(ConfigService) private readonly configService: ConfigService){}
 
-  createAccountsOptions(): AsyncNestAccountsOptions {
+  createAccountsOptions(): NestAccountsOptionsResult {
     return {
         serverOptions: {
           db: new Mongo(),
@@ -107,33 +106,33 @@ Passing `REST: true`, or a config object will enable and mount the `@accounts/re
 
 `true` for defaults, or an object with the following keys
 
-| Key        | Default | Description |
-| ------------- |:-------------:|-----|
-| path | `/accounts` | The path to mount on |
-| relative | `true` | Is the path Relative to the nest route, passing an absolute path is the same as making this `false` |
-| ...[AccountsExpressOptions](https://accounts-js.netlify.com/docs/transports/rest-express) | | any other AccountsExpress options |
+| Key                                                                                       |   Default   | Description                                                                                         |
+| ----------------------------------------------------------------------------------------- | :---------: | --------------------------------------------------------------------------------------------------- |
+| path                                                                                      | `/accounts` | The path to mount on                                                                                |
+| relative                                                                                  |   `true`    | Is the path Relative to the nest route, passing an absolute path is the same as making this `false` |
+| ...[AccountsExpressOptions](https://accounts-js.netlify.com/docs/transports/rest-express) |             | any other AccountsExpress options                                                                   |
 
 #### REST Path
 By default it mounts at the MODULE_PATH, which is the same as what [`nest-router`](https://github.com/nestjsx/nest-router) configures. If it's not configured it defaults to `/accounts`.
 
-| Config        | Nest router module config| Path | Examples |
-| ------------- |:-------------:|:-----:|:---:|
-| `{REST: true}` | none | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
-| `{REST: true}` | `/auth` | `/auth` | `/auth/user`, `/auth/:service/authenticate` |
-| `{REST: {path: "myPath"}}` | `/auth` | `/auth/myPath` | `/auth/myPath/user`, `/auth/myPath/:service/authenticate` |
-| `{REST: {path: "/myPath"}}` | `/auth` | `/myPath` | `/myPath/user`, `/myPath/:service/authenticate` |
+| Config                      | Nest router module config |      Path      |                         Examples                          |
+| --------------------------- | :-----------------------: | :------------: | :-------------------------------------------------------: |
+| `{REST: true}`              |           none            |  `/accounts`   |    `/accounts/user`, `/accounts/:service/authenticate`    |
+| `{REST: true}`              |          `/auth`          |    `/auth`     |        `/auth/user`, `/auth/:service/authenticate`        |
+| `{REST: {path: "myPath"}}`  |          `/auth`          | `/auth/myPath` | `/auth/myPath/user`, `/auth/myPath/:service/authenticate` |
+| `{REST: {path: "/myPath"}}` |          `/auth`          |   `/myPath`    |      `/myPath/user`, `/myPath/:service/authenticate`      |
 
 > The path is passed into [`resolve`](https://nodejs.org/api/url.html#url_url_resolve_from_to) for example: `resolve("/auth", "myPath")` -> `/auth/myPath`, or `resolve("/auth","/myPath")` -> `/myPath`
  
 #### Relative urls
 By default the path is relative to the NEST path as in the second to last example above. You can override this by setting the `relative` option to `false`. Really this is equal to passing an absolute path as in the last example above
 
-| Config        | Nest router module config| Path | Examples |
-| ------------- |:-------------:|:-----:|:---:|
-| `{REST: {relative: false}}` | none | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
-| `{REST: {relative: false}}` | `/auth` | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
-| `{REST: {path: "myPath", relative: false}}` | `/auth` | `/myPath` | `/myPath/user`, `/myPath/:service/authenticate` |
-| `{REST: {path: "/myPath", relative: false}}` | `/auth` | `/myPath` | `/myPath/user`, `/myPath/:service/authenticate` |
+| Config                                       | Nest router module config |    Path     |                      Examples                       |
+| -------------------------------------------- | :-----------------------: | :---------: | :-------------------------------------------------: |
+| `{REST: {relative: false}}`                  |           none            | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
+| `{REST: {relative: false}}`                  |          `/auth`          | `/accounts` | `/accounts/user`, `/accounts/:service/authenticate` |
+| `{REST: {path: "myPath", relative: false}}`  |          `/auth`          |  `/myPath`  |   `/myPath/user`, `/myPath/:service/authenticate`   |
+| `{REST: {path: "/myPath", relative: false}}` |          `/auth`          |  `/myPath`  |   `/myPath/user`, `/myPath/:service/authenticate`   |
 
 ### GraphQL
 The module will configure `@accounts/graphql-api` and export it as the ACCOUNTS_JS_GRAPHQL provider. This make it easy to use it with `@nestjs/graphql`
@@ -152,7 +151,7 @@ app.module.ts
 import { Module, Inject } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql"
 import { AccountsModule } from "@accounts/graphql-api";
-import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNestAccountsOptions } from "@nb/nestjs-accountsjs";
+import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, NestAccountsOptionsResult } from "@nb/nestjs-accountsjs";
 
 @Module({
     imports: [
@@ -218,11 +217,11 @@ GraphQLModule.forRootAsync({
  
 The module will register several providers for accounts js. This enables these core items for dependency injection in Nest, which can be really powerful. For example you can inject the server into your users service and add an event listener for user created to populate the user with default data. See an example in the [with-inject-server-and-opts](./examples/with-inject-server-and-opts) example
 
-| Injector Token        | Value           | Type |
-| ------------- |:-------------:|:-----:|
-| ACCOUNTS_JS_SERVER | `AccountsServer` Instance  | `AccountsServer` |
-| ACCOUNTS_JS_OPTIONS | Options for AccountsServer, AccountsServer services, REST and GraphQL | `NestAccountsOptions` |
-| ACCOUNTS_JS_GRAPHQL | Accounts JS GraphQLModule |  AccountsModule from `@accounts/graphql-api`|
+| Injector Token      |                                 Value                                 |                    Type                     |
+| ------------------- | :-------------------------------------------------------------------: | :-----------------------------------------: |
+| ACCOUNTS_JS_SERVER  |                       `AccountsServer` Instance                       |              `AccountsServer`               |
+| ACCOUNTS_JS_OPTIONS | Options for AccountsServer, AccountsServer services, REST and GraphQL |            `NestAccountsOptions`            |
+| ACCOUNTS_JS_GRAPHQL |                       Accounts JS GraphQLModule                       | AccountsModule from `@accounts/graphql-api` |
 
 
 # Decorators
@@ -234,13 +233,13 @@ The module will register several providers for accounts js. This enables these c
 ## Param Decorators
 Decorators to match several of the request fields that accounts provides. These are compatible with both HTTP Request handlers and Graphql resolvers and helps to make code more concise and self-documenting
 
-| Name        | Usage           |  Shorthand for |
-| ------------- |:-------------:|:-----:|
-| User      | `@User() currentUser: User` | `req.user` |
-| UserId      | `@UserID() userId: string` | `req.user.id` |
-| AuthToken | `@AuthToken() authToken?: string` | multiple, `req.headers.Authorization`|
-| ClientIP | `@ClientIP() clientIP: string` | multiple |
-| UserAgent | `@UserAgent() userAgent: string` | multiple |
+| Name      |               Usage               |             Shorthand for             |
+| --------- | :-------------------------------: | :-----------------------------------: |
+| User      |    `@User() currentUser: User`    |              `req.user`               |
+| UserId    |    `@UserID() userId: string`     |             `req.user.id`             |
+| AuthToken | `@AuthToken() authToken?: string` | multiple, `req.headers.Authorization` |
+| ClientIP  |  `@ClientIP() clientIP: string`   |               multiple                |
+| UserAgent | `@UserAgent() userAgent: string`  |               multiple                |
 
 ## Auth Guard
 
@@ -252,7 +251,7 @@ class MyController {
     @Get()
     @UseGuards(AuthGuard)
     mySecret() {
-        return "I used to be a jedi"
+        return "I was a jedi"
     }
 }
 ```
@@ -263,7 +262,7 @@ Method level:
 class MyController {
     @Get()
     mySecret() {
-        return "I used to be a jedi"
+        return "I was a jedi"
     }
 }
 ```
@@ -274,7 +273,7 @@ class MyResolver {
     @Query()
     @UseGuards(AuthGuard)
     mySecret() {
-        return "I used to be a jedi"
+        return "I was a jedi"
     }
 }
 ```
@@ -294,7 +293,7 @@ import { User } from "@accounts/types"
 
 const IsDarthVader = (user: User, params: AccountsSessionRequest | GQLParam, context: ExecutionContext) => user.username === "Darth Vader"
 
-const TalkingToLuke = (user: User, params: AccountsSessionRequest, context: ExecutionContext) => params.body.talkingToLuke)
+const TalkingToLuke = (user: User, context: ExecutionContext, params: AccountsSessionRequest) => params.body.talkingToLuke)
 
 const AsyncValidator = (user: User) => Promise.resolve(true);
 
@@ -310,7 +309,10 @@ class DarthVader {
 ```
 
 ### Making Validators Robust
-Note that TalkingToLuke is HTTP specific because it uses the body to the request. We can make this a little more robust by using some of the util methods provided, such as `isGQLParam` `getGQLcontext`, `getFieldFromDecoratorParams` and `getFieldFormExecContext`.
+Note: these are likely to change. There is development in nestjs core 6.7 that adds getType to execution context. Once this is added to the GraphQLExecutionContext we'll update this to pass only the context. If you can, avoid using the third parameter
+
+Above, the `TalkingToLuke` validator is HTTP specific because it uses the body to the request. We can make this a little more robust by using some of the util methods provided, such as `isGQLParam` `getGQLcontext`, `getFieldFromDecoratorParams` and `getFieldFormExecContext`.
+
 
 
 ```typescript
@@ -326,7 +328,7 @@ import { User } from "@accounts/types"
 
 const IsDarthVader = (user: User) => user.username = "Darth Vader"
 
-const TalkingToLuke = (user: User, params: AccountsSessionRequest | GQLParam, context: ExecutionContext) => isGQLParam(params) ? getGQLContext(params).talkingToLuke : params.body.talkingToLuke;
+const TalkingToLuke = (user: User, context: ExecutionContext, params: AccountsSessionRequest | GQLParam) => isGQLParam(params) ? getGQLContext(params).talkingToLuke : params.body.talkingToLuke;
 
 const AsyncValidator = () => Promise.resolve(true);
 
