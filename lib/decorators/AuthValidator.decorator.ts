@@ -6,8 +6,8 @@ import { GQLParam } from '../utils/GraphQLUtils';
 
 export type AuthValidatorFn = (
   user: User,
-  params: AccountsSessionRequest | GQLParam,
   context: ExecutionContext,
+  params: AccountsSessionRequest | GQLParam,
 ) => boolean | Promise<boolean>;
 
 /**

@@ -1,13 +1,12 @@
 import { User } from '@accounts/types';
-import { UseGuards, UseInterceptors } from '@nestjs/common';
+import { ExecutionContext, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Query, Resolver } from '@nestjs/graphql';
 import { AccountsSessionRequest, AuthGuard, AuthValidator } from '../../dist';
 import { AccountsErrorInterceptor } from '../../dist/interceptors/AccountsError.interceptor';
 import { getGQLContext, GQLParam, isGQLParam } from '../../dist/utils/GraphQLUtils';
-import assert = require('assert');
 
 const IsDarthVader = (user: User) => user.username === 'darth_vader';
-const TalkingToLuke = (_: User, params: AccountsSessionRequest | GQLParam) =>
+const TalkingToLuke = (_: User, _context: ExecutionContext, params: AccountsSessionRequest | GQLParam) =>
   isGQLParam(params) ? !!getGQLContext<any>(params).talkingToLuke : !!params.body.talkingToLuke;
 
 @Resolver()
