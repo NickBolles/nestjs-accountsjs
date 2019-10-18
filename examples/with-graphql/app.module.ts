@@ -1,12 +1,12 @@
+import { AccountsModule } from '@accounts/graphql-api';
 import { AccountsPassword } from '@accounts/password';
-import { Module, Inject } from '@nestjs/common';
+import { Inject, Module } from '@nestjs/common';
+import { GqlModuleOptions, GqlOptionsFactory, GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
 // replace the below line with "import { AccountsJsModule } from '@nb/accountsjs-nest';"
-import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../dist';
+import { AccountsJsModule, AccountsOptionsFactory, ACCOUNTS_JS_GRAPHQL, NestAccountsOptionsResult } from '../../lib';
 import { UserDatabase } from '../shared/database.service';
-import { GraphQLModule, GqlOptionsFactory, GqlModuleOptions } from '@nestjs/graphql';
-import { AccountsModule } from '@accounts/graphql-api';
 
 class AppAccountsJSOptionsFactory implements AccountsOptionsFactory {
   constructor(@Inject(UserDatabase) private readonly userDatabase: UserDatabase) {}
@@ -46,7 +46,10 @@ class AppAccountsJSOptionsFactory implements AccountsOptionsFactory {
 }
 
 class AppGraphQLOptionsFactory implements GqlOptionsFactory {
-  constructor(@Inject(ACCOUNTS_JS_GRAPHQL) private readonly accountsGQLModule: typeof AccountsModule) {}
+  constructor(
+    @Inject(ACCOUNTS_JS_GRAPHQL)
+    private readonly accountsGQLModule: typeof AccountsModule,
+  ) {}
 
   createGqlOptions(): GqlModuleOptions | Promise<GqlModuleOptions> {
     /**
@@ -77,7 +80,10 @@ const AppAccountsModule = AccountsJsModule.registerAsync({
     /**
      * Now we need to build the graphql module
      */
-    GraphQLModule.forRootAsync({ imports: [AppAccountsModule], useClass: AppGraphQLOptionsFactory }),
+    GraphQLModule.forRootAsync({
+      imports: [AppAccountsModule],
+      useClass: AppGraphQLOptionsFactory,
+    }),
   ],
 })
 export class AppModule {}

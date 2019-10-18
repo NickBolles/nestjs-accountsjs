@@ -2,7 +2,7 @@ import { AccountsPassword } from '@accounts/password';
 import { Inject, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
-import { AccountsJsModule, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../dist';
+import { AccountsJsModule, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../lib';
 import { UserDatabase } from '../shared/database.service';
 import { UserService } from './UserService';
 

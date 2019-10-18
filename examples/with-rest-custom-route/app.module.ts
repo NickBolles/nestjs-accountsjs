@@ -1,9 +1,9 @@
 import { AccountsPassword } from '@accounts/password';
-import { Module, Inject } from '@nestjs/common';
-import { AccountsJsModule, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../dist';
-import { UserDatabase } from '../shared/database.service';
-import { ConfigService, ConfigModule } from 'nestjs-config';
+import { Inject, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
+import { AccountsJsModule, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../lib';
+import { UserDatabase } from '../shared/database.service';
 
 class AppAccountsOptionsFactory implements AccountsOptionsFactory {
   constructor(@Inject(ConfigService) private readonly configService: ConfigService) {}

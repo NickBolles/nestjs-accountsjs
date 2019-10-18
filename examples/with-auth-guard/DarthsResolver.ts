@@ -1,9 +1,9 @@
 import { User } from '@accounts/types';
 import { ExecutionContext, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Query, Resolver } from '@nestjs/graphql';
-import { AccountsSessionRequest, AuthGuard, AuthValidator } from '../../dist';
-import { AccountsErrorInterceptor } from '../../dist/interceptors/AccountsError.interceptor';
-import { getGQLContext, GQLParam, isGQLParam } from '../../dist/utils/GraphQLUtils';
+import { AccountsSessionRequest, AuthGuard, AuthValidator } from '../../lib';
+import { AccountsErrorInterceptor } from '../../lib/interceptors/AccountsError.interceptor';
+import { getGQLContext, GQLParam, isGQLParam } from '../../lib/utils/GraphQLUtils';
 
 const IsDarthVader = (user: User) => user.username === 'darth_vader';
 const TalkingToLuke = (_: User, _context: ExecutionContext, params: AccountsSessionRequest | GQLParam) =>

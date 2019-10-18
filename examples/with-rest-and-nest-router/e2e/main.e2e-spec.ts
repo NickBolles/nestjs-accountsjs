@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
-import { AccountsJsModule } from '../../../dist';
+import { AccountsJsModule } from '../../../lib';
 import { RouteTestTableWithRouter } from '../../shared/routes';
 import { sharedRoutesTests } from '../../shared/sharedRouteTests';
 import { AppAccountsOptionsFactory } from '../app.module';
@@ -17,5 +17,8 @@ import { AppAccountsOptionsFactory } from '../app.module';
 class AppModule {}
 
 describe('with-rest-and-nest-router', () => {
-  describe('REST', () => sharedRoutesTests(AppModule, RouteTestTableWithRouter('/app/auth'), { password: true }));
+  describe('REST', () =>
+    sharedRoutesTests(AppModule, RouteTestTableWithRouter('/app/auth'), {
+      password: true,
+    }));
 });

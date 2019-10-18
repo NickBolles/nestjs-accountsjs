@@ -77,10 +77,5 @@
     "@accounts/graphql-api": "0.*",
     "@accounts/rest-express": "0.*",
     "@accounts/server": "0.*"
-  },
-  "directories": {
-    "example": "examples",
-    "lib": "lib",
-    "test": "test"
   }
 }

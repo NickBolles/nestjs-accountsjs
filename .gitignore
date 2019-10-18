@@ -17,6 +17,8 @@ npm-debug.log
 test-schema.graphql
 *.test-definitions.ts
 
-# dist
-/dist
+# lib
+/lib
 examples/with-auth-guard/__schema.graphql
+examples/__schema.graphql
+examples/with-decorators/__schema.graphql

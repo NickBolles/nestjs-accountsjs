@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { RouterModule } from 'nest-router';
 import { ConfigService } from 'nestjs-config';
-import { AccountsJsModule } from '../../lib/accounts-js.module';
+import { AccountsJsModule } from '../../lib';
 import { configForPath, getRoutes, GetRoutesOptions, RequestRoute, RouteTestEntry } from './routes';
 
 export function sharedRoutesTests(AppModule: any, pathTables: RouteTestEntry[], routesOptions: GetRoutesOptions = {}) {

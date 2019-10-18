@@ -1,6 +1,6 @@
 import { AccountsPassword } from '@accounts/password';
 import { Module } from '@nestjs/common';
-import { AccountsJsModule } from '../../dist';
+import { AccountsJsModule } from '../../lib';
 import { UserDatabase } from '../shared/database.service';
 
 @Module({
