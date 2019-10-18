@@ -1,17 +1,17 @@
-import { Resolver, Query } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
+import { Query, Resolver } from '@nestjs/graphql';
 import { AuthGuard } from '../../';
 
 @Resolver()
 export class UserResolver {
-  @Query()
+  @Query(_ => String)
   public() {
     return 'beep boop';
   }
 
-  @Query()
+  @Query(_ => String)
   @UseGuards(AuthGuard)
-  mySecret() {
-    return 'I used to be a jedi';
+  authenticatedSecret() {
+    return 'secret';
   }
 }

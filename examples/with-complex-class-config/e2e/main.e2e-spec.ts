@@ -1,7 +1,7 @@
-import { AppModule } from '../app.module';
+import { RouteTestTableNoRouter } from '../../shared/routes';
 import { sharedRoutesTests } from '../../shared/sharedRouteTests';
-import { RouteTestTableNoRelative } from '../../shared/routes';
+import { AppModule } from '../app.module';
 
 describe('with-complex-class-config', () => {
-  describe('REST', () => sharedRoutesTests(AppModule, RouteTestTableNoRelative, { password: true }));
+  describe('REST', () => sharedRoutesTests(AppModule, RouteTestTableNoRouter, { password: true }));
 });

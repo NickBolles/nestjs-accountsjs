@@ -3,7 +3,7 @@ import { Module, Inject } from '@nestjs/common';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
 import { UserDatabase } from '../shared/database.service';
-import { AccountsOptionsFactory, AsyncNestAccountsOptions, AccountsJsModule } from '../../dist';
+import { AccountsOptionsFactory, NestAccountsOptionsResult, AccountsJsModule } from '../../dist';
 import { NestFactory } from '@nestjs/core';
 
 class AppAccountsOptionsFactory implements AccountsOptionsFactory {
@@ -11,7 +11,7 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(UserDatabase) private readonly userDatabase: UserDatabase,
   ) {}
-  createAccountsOptions(): AsyncNestAccountsOptions {
+  createAccountsOptions(): NestAccountsOptionsResult {
     return {
       serverOptions: {
         db: this.userDatabase,

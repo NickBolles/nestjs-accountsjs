@@ -1,7 +1,6 @@
-import { AppModule } from '../app.module';
-import { RouteTestTableNoRelative, RouteTestTableWithRelative } from '../../shared/routes';
 import { sharedRoutesTests } from '../../shared/sharedRouteTests';
+import { AppModule } from '../app.module';
 
 describe('with-rest-custom-route', () => {
-  describe('REST', () => sharedRoutesTests(AppModule, RouteTestTableWithRelative, { password: true }));
+  describe('REST', () => sharedRoutesTests(AppModule, [[undefined, true, null, '/accounts']], { password: true }));
 });

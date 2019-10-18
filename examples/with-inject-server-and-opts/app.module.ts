@@ -1,9 +1,9 @@
 import { AccountsPassword } from '@accounts/password';
-import { Module, Inject } from '@nestjs/common';
+import { Inject, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
+import { AccountsJsModule, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../dist';
 import { UserDatabase } from '../shared/database.service';
-import { AccountsOptionsFactory, AsyncNestAccountsOptions, AccountsJsModule } from '../../dist';
 import { UserService } from './UserService';
 
 class AppAccountsOptionsFactory implements AccountsOptionsFactory {
@@ -11,7 +11,7 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(UserDatabase) private readonly userDatabase: UserDatabase,
   ) {}
-  createAccountsOptions(): AsyncNestAccountsOptions {
+  createAccountsOptions(): NestAccountsOptionsResult {
     return {
       serverOptions: {
         db: this.userDatabase,
@@ -31,6 +31,7 @@ class AppAccountsOptionsFactory implements AccountsOptionsFactory {
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
     AccountsJsModule.registerAsync({
+      providers: [UserDatabase],
       /**
        * The accountsOptions is treated as a nest Custom Provider. This means that we can do some pretty
        * powerful stuff when we take advantage of Nests dependency injection, including seemless configuration

@@ -3,13 +3,13 @@ import { Module, Inject } from '@nestjs/common';
 import { RouterModule } from 'nest-router';
 import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
-import { AccountsJsModule, AccountsOptionsFactory, AsyncNestAccountsOptions } from '../../';
+import { AccountsJsModule, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../dist';
 import { UserDatabase } from '../shared/database.service';
 // tslint:disable:max-line-length
 
 export class AppAccountsOptionsFactory implements AccountsOptionsFactory {
   constructor(@Inject(ConfigService) private readonly configService: ConfigService) {}
-  createAccountsOptions(): AsyncNestAccountsOptions {
+  createAccountsOptions(): NestAccountsOptionsResult {
     return {
       serverOptions: {
         db: new UserDatabase(),

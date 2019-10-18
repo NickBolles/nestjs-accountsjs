@@ -1,14 +1,9 @@
-import { configForPath, getRoutes, RequestRoute, GetRoutesOptions, RouteTestEntry } from './routes';
-import { ConfigService } from 'nestjs-config';
 import { INestApplication } from '@nestjs/common';
-import { Test, TestingModuleBuilder } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { RouterModule } from 'nest-router';
+import { ConfigService } from 'nestjs-config';
 import { AccountsJsModule } from '../../lib/accounts-js.module';
-import { MODULE_PATH } from '@nestjs/common/constants';
-
-interface PreCompileFixtureFn {
-  (module: TestingModuleBuilder, path: string, expectedRootPath: string): Promise<void>;
-}
+import { configForPath, getRoutes, GetRoutesOptions, RequestRoute, RouteTestEntry } from './routes';
 
 export function sharedRoutesTests(AppModule: any, pathTables: RouteTestEntry[], routesOptions: GetRoutesOptions = {}) {
   describe.each(pathTables)(
@@ -19,8 +14,9 @@ export function sharedRoutesTests(AppModule: any, pathTables: RouteTestEntry[], 
       beforeAll(async () => {
         const imports = [];
         // If there's a relative route setup NestRouter
-        if (relativePath)
+        if (relativePath) {
           imports.push(RouterModule.forRoutes([{ module: AccountsJsModule, path: relativePath as any }]));
+        }
 
         const moduleFixture = await Test.createTestingModule({
           imports: [...imports, AppModule],
@@ -28,9 +24,6 @@ export function sharedRoutesTests(AppModule: any, pathTables: RouteTestEntry[], 
           .overrideProvider(ConfigService)
           .useValue(configForPath(path as any, ignoreNestRoute as any))
           .compile();
-        // const module = moduleFixture.get(AccountsJsModule);
-        // console.log("=".repeat(50))
-        // console.log("module path is: ",Reflect.getMetadata(MODULE_PATH, AccountsJsModule));
 
         app = moduleFixture.createNestApplication();
         await app.init();

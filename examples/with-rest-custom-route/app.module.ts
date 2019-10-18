@@ -1,13 +1,13 @@
 import { AccountsPassword } from '@accounts/password';
 import { Module, Inject } from '@nestjs/common';
-import { AccountsJsModule, AccountsOptionsFactory, AsyncNestAccountsOptions } from '../../dist';
+import { AccountsJsModule, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../dist';
 import { UserDatabase } from '../shared/database.service';
 import { ConfigService, ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
 
 class AppAccountsOptionsFactory implements AccountsOptionsFactory {
   constructor(@Inject(ConfigService) private readonly configService: ConfigService) {}
-  createAccountsOptions(): AsyncNestAccountsOptions {
+  createAccountsOptions(): NestAccountsOptionsResult {
     return {
       serverOptions: {
         db: new UserDatabase(),

@@ -1,6 +1,6 @@
-import request from 'supertest';
-import { join } from 'path';
 import { ConfigService } from 'nestjs-config';
+import { join } from 'path';
+import request from 'supertest';
 
 interface RouteDef {
   path: string;
@@ -64,39 +64,40 @@ export function oauthRoutes(rootPath: string, providers: string[]): Array<[strin
 export type RouteTestEntry = [string, boolean, string, string];
 
 /** Basic route list to build off of */
-const baseRouteList: RouteTestEntry[] = [
+const routeList: RouteTestEntry[] = [
   [undefined, true, null, '/accounts'],
   ['/', true, null, '/'],
   ['myPath', true, null, '/myPath'],
   ['./myPath', true, null, '/myPath'], // uses resolve relative to / if nest route isn't set
   ['/myPath', true, null, '/myPath'],
   ['/myPath/', true, null, '/myPath'],
-  // todo: figure out why this isn't working
-  // ['//myPath//', true, null, '/myPath'], // normalizes slashes
+  ['//myPath//', true, null, '/myPath'], // normalizes slashes
   ['/myPath/another', true, null, '/myPath/another'],
 ];
+const baseRouteList = [
+  ...routeList,
+  ...(routeList.map(([a, b, _, d]) => [a, b, '/auth', d]) as RouteTestEntry[]), // true for ignore should be the same even if there is a nest route
+];
 /** tests without nest-router, expected values assume no nest-router */
-export const RouteTestTableNoRelative: RouteTestEntry[] = [
-  ...baseRouteList,
-  ...(baseRouteList.map(([a, _, c, d]) => [a, false, c, d]) as RouteTestEntry[]), // false for ignore should be the same if there's no nest route
+export const RouteTestTableNoRouter: RouteTestEntry[] = [
+  ...routeList,
+  ...(routeList.map(([a, _, c, d]) => [a, false, c, d]) as RouteTestEntry[]), // false for ignore should be the same if there's no nest route
   // Setting a nest-router route shouldn't change anything if ignoreNestRoute is true
-  ...(baseRouteList.map(([a, b, _, d]) => [a, b, '/auth', d]) as RouteTestEntry[]), // true for ignore should be the same even if there is a nest route
 ];
 
 /** tests with nest router, need to manually define everything beyond first cases */
-export const RouteTestTableWithRelative: RouteTestEntry[] = [
+export const RouteTestTableWithRouter: (nestPathToUse: string) => RouteTestEntry[] = (nestPathToUse: string) => [
   // path, nest-router-path, expected root path
-  ...RouteTestTableNoRelative,
+  ...baseRouteList,
 
-  [undefined, false, '/auth', '/auth'],
-  /*['/', false, "/auth", '/'],
-  ['myPath', false, "/auth", '/auth/myPath'],
-  ['./myPath', false, "/auth", '/auth/myPath'], // uses resolve relative to / if nest route isn't set
-  ['/myPath', false, "/auth", '/myPath'],
-  ['/myPath/', false, "/auth", '/myPath'],
-  // todo: figure out why this isn't working
-  // ['//myPath//', false, "/auth", '/myPath'], // normalizes slashes
-  ['/myPath/another', false, "/auth", '/myPath/another'],*/
+  [undefined, false, nestPathToUse, nestPathToUse],
+  ['/', false, nestPathToUse, '/'],
+  ['myPath', false, nestPathToUse, `${nestPathToUse}/myPath`],
+  ['./myPath', false, nestPathToUse, `${nestPathToUse}/myPath`], // uses resolve relative to / if nest route isn't set
+  ['/myPath', false, nestPathToUse, '/myPath'],
+  ['/myPath/', false, nestPathToUse, '/myPath'],
+  ['//myPath//', false, nestPathToUse, '/myPath'], // normalizes slashes
+  ['/myPath/another', false, nestPathToUse, '/myPath/another'],
 ];
 
 /**

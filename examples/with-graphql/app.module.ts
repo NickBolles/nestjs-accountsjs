@@ -3,7 +3,7 @@ import { Module, Inject } from '@nestjs/common';
 import { ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
 // replace the below line with "import { AccountsJsModule } from '@nb/accountsjs-nest';"
-import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, AsyncNestAccountsOptions } from '../../dist';
+import { AccountsJsModule, ACCOUNTS_JS_GRAPHQL, AccountsOptionsFactory, NestAccountsOptionsResult } from '../../dist';
 import { UserDatabase } from '../shared/database.service';
 import { GraphQLModule, GqlOptionsFactory, GqlModuleOptions } from '@nestjs/graphql';
 import { AccountsModule } from '@accounts/graphql-api';
@@ -11,7 +11,7 @@ import { AccountsModule } from '@accounts/graphql-api';
 class AppAccountsJSOptionsFactory implements AccountsOptionsFactory {
   constructor(@Inject(UserDatabase) private readonly userDatabase: UserDatabase) {}
 
-  createAccountsOptions(): AsyncNestAccountsOptions {
+  createAccountsOptions(): NestAccountsOptionsResult {
     return {
       serverOptions: {
         db: this.userDatabase,

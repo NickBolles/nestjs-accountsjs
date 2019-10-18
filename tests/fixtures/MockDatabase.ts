@@ -28,7 +28,7 @@ export class MockDatabase implements DatabaseInterface {
       deactivated: false,
       ...user,
     });
-    return 'User Created';
+    return id;
   }
   async setUsername(userId: string, newUsername: string): Promise<void> {
     const user = await this.findUserById(userId);
