@@ -18,8 +18,6 @@ import { isProvider, isClassProvider, isExistingProvider } from '../utils/typegu
  * @param {AccountsOptions} options Either a POJO to use, or a Nest Custom provider
  */
 export function accountsOptionsToProvider(options: AsyncNestAccountsOptions): NestAccountsOptionsProvider[] {
-  let accountsProvider: NestAccountsOptionsProvider;
-
   if (!isProvider(options)) {
     return [
       {

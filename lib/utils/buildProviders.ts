@@ -1,6 +1,10 @@
 import { Provider } from '@nestjs/common';
 import { AccountsSessionInterceptorProvider } from '../interceptors/ResumeSession.interceptor';
-import { AsyncNestAccountsOptions } from '../interfaces/AccountsNestModuleOptions';
+import {
+  NestAccountsOptionsResult,
+  NestAccountsOptions,
+  AsyncNestAccountsOptions,
+} from '../interfaces/AccountsNestModuleOptions';
 import { accountsOptionsToProvider } from '../providers/AccountsOptions.provider';
 import { AccountsServerProvider } from '../providers/AccountsServer.provider';
 import { ACCOUNTS_JS_SERVER } from './accounts.constants';
@@ -29,7 +33,7 @@ export function buildProviders(options: AsyncNestAccountsOptions, server?: Accou
  *
  * This will also create the AccountsSessionInterceptor as a global interceptor
  * so that the accounts session is restored on every request.
- * s
+ *
  * @param {AsyncNestAccountsOptions} options for the accounts module
  */
 export function buildAsyncProviders(options: AsyncNestAccountsOptions): Provider[] {

@@ -12,6 +12,30 @@ export interface RequestContext {
 
 type Context = AccountsModuleContext & RequestContext;
 
+// todo: improve return types
+
+export function isGQLParam(obj: any): obj is GQLParam {
+  return isArray(obj) && obj.length === 4; // todo: be a litle smarter about this
+}
+
+export function getGQLRoot<TRoot = any>(param: AccountsSessionRequest | GQLParam): TRoot | any {
+  return isGQLParam(param) && param[0];
+}
+export function getGQLArgs<TArgs = any>(param: AccountsSessionRequest | GQLParam): TArgs | undefined {
+  return isGQLParam(param) && param[1];
+}
+export function getGQLContext<TContext extends Context>(
+  param: AccountsSessionRequest | GQLParam,
+): TContext | undefined {
+  return isGQLParam(param) && (param[2] as TContext);
+}
+export function getGQLInfo<TInfo = any>(param: AccountsSessionRequest | GQLParam): TInfo | undefined {
+  return isGQLParam(param) && param[3];
+}
+
+/**
+ * I'm not sure how useful this actually is, It seems like there has to be forking logic for graphql vs rest or other transports
+ */
 export function getFieldFromDecoratorParams<K extends keyof AccountsSessionRequest>(
   param: AccountsSessionRequest | GQLParam,
   field: K,
@@ -28,13 +52,6 @@ export function getFieldFromDecoratorParams(param: AccountsSessionRequest | GQLP
     return (ctx && deepGet(ctx, fields)) || (ctx.req && deepGet(ctx.req, fields));
   }
   return deepGet(param, fields) || null;
-}
-
-export function isGQLParam(obj: any): obj is GQLParam {
-  return isArray(obj) && obj.length === 4; // todo: be a litle smarter about this
-}
-export function getGQLContext(param: AccountsSessionRequest | GQLParam): Context | undefined {
-  return isGQLParam(param) && param[2];
 }
 
 function deepGet(obj, fields: any[]) {

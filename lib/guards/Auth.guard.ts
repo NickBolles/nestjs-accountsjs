@@ -7,7 +7,6 @@ import { AccountsSessionRequest } from '../interfaces/AccountsRequest';
 import { AUTH_VALIDATOR_FUNCTIONS } from '../utils/accounts.constants';
 import { GetFieldFromExecContext, GQLParam } from '../utils/GraphQLUtils';
 
-// todo: allow customization of this
 // todo: unify context better. It sounds like this will break see issue: https://github.com/nestjs/nest/issues/1581 and PR https://github.com/nestjs/nest/pull/2493
 @Injectable()
 export class AuthGuard implements CanActivate {

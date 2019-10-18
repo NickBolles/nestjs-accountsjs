@@ -50,21 +50,21 @@ export interface NestAccountsOptions {
   GraphQL?: NestAccountsGraphQLOptions | boolean;
 }
 
-export type NestAccountsOptionsPromise = Promise<NestAccountsOptions> | NestAccountsOptions;
+export type NestAccountsOptionsResult = Promise<NestAccountsOptions> | NestAccountsOptions;
 
 //#region Interfaces for ways to provide NestAccountsOptions
 /**
  * Factory class interface
  */
 export interface AccountsOptionsFactory {
-  createAccountsOptions(): NestAccountsOptionsPromise;
+  createAccountsOptions(): NestAccountsOptionsResult;
 }
 /**
  * Nest custom provider for NestAccountsOptions
  */
 export type NestAccountsOptionsProvider =
-  | ValueProvider<NestAccountsOptionsPromise>
-  | FactoryProvider<NestAccountsOptionsPromise>
+  | ValueProvider<NestAccountsOptionsResult>
+  | FactoryProvider<NestAccountsOptionsResult>
   | ClassProvider<AccountsOptionsFactory>
   | ExistingProvider<AccountsOptionsFactory>;
 
